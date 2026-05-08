@@ -4,21 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Akhowaat Foundation - Live Sync</title>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -34,349 +28,150 @@
             max-width: 400px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .login-card h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
+        .login-card h2 { text-align: center; margin-bottom: 30px; color: #333; }
         .login-card input, .login-card select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid #ddd; border-radius: 10px; font-size: 16px;
         }
         .login-card button {
-            width: 100%;
-            padding: 12px;
+            width: 100%; padding: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
+            color: white; border: none; border-radius: 10px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
         }
         .error-msg {
-            background: #ffebee;
-            color: #c62828;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            display: none;
+            background: #ffebee; color: #c62828; padding: 10px;
+            border-radius: 8px; margin-bottom: 15px; text-align: center; display: none;
         }
-        .demo-info {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #888;
-        }
-        
-        .dashboard {
-            display: none;
-            min-height: 100vh;
-            background: #f5f7fa;
-        }
-        
+        .dashboard { display: none; min-height: 100vh; background: #f5f7fa; }
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: white; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .council-navbar {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-        .navbar h3 {
-            font-size: 18px;
-        }
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
+        .council-navbar { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .navbar h3 { font-size: 18px; }
+        .logout-btn { background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 8px; cursor: pointer; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         .balance-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            margin-bottom: 20px;
+            color: white; padding: 30px; border-radius: 20px;
+            text-align: center; margin-bottom: 20px;
         }
-        .council-balance {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-        .balance-amount {
-            font-size: 48px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        
-        .stats-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .council-balance { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .balance-amount { font-size: 48px; font-weight: bold; margin-top: 10px; }
+        .stats-row { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-card {
-            flex: 1;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
+            flex: 1; background: white; padding: 15px;
+            border-radius: 15px; text-align: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .stat-card .value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-        .stat-card .label {
-            font-size: 11px;
-            color: #888;
-            margin-top: 5px;
-        }
-        
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+        .stat-card .value { font-size: 20px; font-weight: bold; color: #333; }
+        .stat-card .label { font-size: 11px; color: #888; margin-top: 5px; }
+        .action-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
         .action-btn {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s;
+            background: white; padding: 20px; border-radius: 15px;
+            text-align: center; cursor: pointer; transition: transform 0.2s;
         }
-        .action-btn:active {
-            transform: scale(0.98);
-        }
-        .action-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        .action-text {
-            font-size: 14px;
-            font-weight: 500;
-            color: #555;
-        }
-        
-        .history-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-        }
+        .action-btn:active { transform: scale(0.98); }
+        .action-icon { font-size: 32px; margin-bottom: 8px; }
+        .action-text { font-size: 14px; font-weight: 500; color: #555; }
+        .history-card { background: white; border-radius: 15px; overflow: hidden; }
         .history-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            padding: 15px; border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px;
         }
-        .history-header h4 {
-            font-size: 16px;
-            color: #333;
-        }
+        .history-header h4 { font-size: 16px; color: #333; }
         .filter-icon-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            background: #f0f0f0;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-left: 5px;
+            background: #f0f0f0; border: none; font-size: 14px;
+            cursor: pointer; padding: 8px 12px; border-radius: 8px; margin-left: 5px;
         }
         .share-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            background: #f0f0f0;
-            padding: 8px 12px;
-            border-radius: 8px;
+            background: #f0f0f0; border: none; font-size: 14px;
+            cursor: pointer; padding: 8px 12px; border-radius: 8px;
         }
-        .history-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
+        .history-list { max-height: 400px; overflow-y: auto; }
         .transaction-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 12px 15px; border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .transaction-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .transaction-left { display: flex; align-items: center; gap: 12px; }
         .transaction-icon {
-            width: 40px;
-            height: 40px;
-            background: #f0f2f5;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+            width: 40px; height: 40px; background: #f0f2f5;
+            border-radius: 40px; display: flex; align-items: center;
+            justify-content: center; font-size: 20px; flex-shrink: 0;
         }
-        .transaction-type {
-            font-weight: 600;
-            font-size: 14px;
-            color: #333;
-        }
-        .transaction-date {
-            font-size: 10px;
-            color: #999;
-            margin-top: 2px;
-        }
-        .transaction-amount {
-            font-weight: 700;
-            font-size: 15px;
-        }
+        .transaction-type { font-weight: 600; font-size: 14px; color: #333; }
+        .transaction-date { font-size: 10px; color: #999; margin-top: 2px; }
+        .transaction-amount { font-weight: 700; font-size: 15px; white-space: nowrap; }
         .amount-positive { color: #10b981; }
         .amount-negative { color: #ef4444; }
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+
+        /* Council tabs in chairman view */
+        .council-tabs {
+            display: flex; gap: 8px; margin-bottom: 15px;
+            overflow-x: auto; padding-bottom: 5px;
         }
-        
-        /* Filter Modal */
+        .council-tab {
+            padding: 8px 16px; border-radius: 20px; border: 2px solid #667eea;
+            background: white; color: #667eea; cursor: pointer;
+            white-space: nowrap; font-size: 13px; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .council-tab.active { background: #667eea; color: white; }
+        .council-tab-content { display: none; }
+        .council-tab-content.active { display: block; }
+
         .filter-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center; z-index: 1000;
         }
         .filter-modal-content {
-            background: white;
-            margin: 20px;
-            padding: 25px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 350px;
+            background: white; margin: 20px; padding: 25px;
+            border-radius: 20px; width: 90%; max-width: 350px;
         }
-        .filter-modal-content h3 {
-            margin-bottom: 20px;
-            color: #333;
-        }
+        .filter-modal-content h3 { margin-bottom: 20px; color: #333; }
         .filter-modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 14px;
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid #ddd; border-radius: 10px; font-size: 14px;
         }
-        
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-content {
-            background: white;
-            margin: 20px;
-            padding: 25px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 350px;
+            background: white; margin: 20px; padding: 25px;
+            border-radius: 20px; width: 90%; max-width: 350px;
         }
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: #333;
-        }
+        .modal-content h3 { margin-bottom: 20px; color: #333; }
         .modal-content input, .modal-content select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 14px;
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid #ddd; border-radius: 10px; font-size: 14px;
         }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
         .modal-buttons button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
+            flex: 1; padding: 12px; border: none;
+            border-radius: 10px; font-weight: 600; cursor: pointer;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-        }
-        
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
         .alert {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 12px;
-            border-radius: 30px;
-            text-align: center;
-            font-size: 14px;
-            z-index: 1000;
-            display: none;
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: #333; color: white; padding: 12px;
+            border-radius: 30px; text-align: center; font-size: 14px;
+            z-index: 2000; display: none;
         }
         .alert-success { background: #10b981; }
         .alert-danger { background: #ef4444; }
-        
         .sync-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #10b981;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            z-index: 100;
+            position: fixed; top: 10px; right: 10px;
+            background: #10b981; color: white; padding: 4px 12px;
+            border-radius: 20px; font-size: 11px; z-index: 100;
         }
-        
         @media (max-width: 500px) {
             .balance-amount { font-size: 36px; }
             .action-icon { font-size: 28px; }
@@ -387,6 +182,7 @@
 
 <div class="sync-status" id="syncStatus">🔄 Connecting...</div>
 
+<!-- LOGIN PAGE - demo hint removed -->
 <div id="loginPage" class="login-container">
     <div class="login-card">
         <h2>🤲 Akhowaat Welfare Foundation</h2>
@@ -400,7 +196,6 @@
         </select>
         <input type="password" id="password" placeholder="Password">
         <button id="loginBtn">Login</button>
-        <div class="demo-info">🔑 Chairman: chairman123 | Council: council123</div>
     </div>
 </div>
 
@@ -415,26 +210,34 @@
             <div>💰 Main Wallet Balance</div>
             <div class="balance-amount" id="chairmanBalance">PKR 0</div>
         </div>
-        
         <div class="stats-row">
             <div class="stat-card"><div class="value" id="totalDeposit">PKR 0</div><div class="label">Total Deposits</div></div>
             <div class="stat-card"><div class="value" id="totalTransfer">PKR 0</div><div class="label">Total Transfers</div></div>
             <div class="stat-card"><div class="value" id="totalExpense">PKR 0</div><div class="label">Total Expenses</div></div>
         </div>
-        
         <div class="action-buttons">
             <div class="action-btn" id="openDeposit"><div class="action-icon">💰</div><div class="action-text">Deposit</div></div>
             <div class="action-btn" id="openTransfer"><div class="action-icon">🔄</div><div class="action-text">Transfer</div></div>
             <div class="action-btn" id="openExpense"><div class="action-icon">📝</div><div class="action-text">Expense</div></div>
             <div class="action-btn" id="openChairmanSettings"><div class="action-icon">⚙️</div><div class="action-text">Settings</div></div>
         </div>
-        
+
+        <!-- Chairman: Own History + Council Records Tabs -->
         <div class="history-card">
             <div class="history-header">
-                <h4>📜 Transaction History</h4>
+                <h4>📜 Records</h4>
                 <div>
                     <button class="filter-icon-btn" id="openFilterBtn">📅 Filter</button>
                     <button class="share-btn" id="shareBtn">📱 Share</button>
+                </div>
+            </div>
+            <div style="padding: 10px 15px 0;">
+                <div class="council-tabs">
+                    <div class="council-tab active" onclick="switchTab('own')">My Transactions</div>
+                    <div class="council-tab" onclick="switchTab('council1')" id="tab-council1">Council 1</div>
+                    <div class="council-tab" onclick="switchTab('council2')" id="tab-council2">Council 2</div>
+                    <div class="council-tab" onclick="switchTab('council3')" id="tab-council3">Council 3</div>
+                    <div class="council-tab" onclick="switchTab('council4')" id="tab-council4">Council 4</div>
                 </div>
             </div>
             <div class="history-list" id="chairmanHistory"></div>
@@ -453,18 +256,15 @@
             <div>🏷️ Council Wallet Balance</div>
             <div class="balance-amount" id="councilBalance">PKR 0</div>
         </div>
-        
         <div class="stats-row">
             <div class="stat-card"><div class="value" id="totalReceived">PKR 0</div><div class="label">Total Received</div></div>
-            <div class="stat-card"><div class="value" id="totalFamilies">0</div><div class="label">Families Helped</div></div>
+            <div class="stat-card"><div class="value" id="totalPersons">0</div><div class="label">Persons Helped</div></div>
             <div class="stat-card"><div class="value" id="totalDistributions">0</div><div class="label">Distributions</div></div>
         </div>
-        
         <div class="action-buttons">
             <div class="action-btn" id="openDistribution"><div class="action-icon">🤝</div><div class="action-text">Distribute</div></div>
             <div class="action-btn" id="openCouncilSettings"><div class="action-icon">⚙️</div><div class="action-text">Settings</div></div>
         </div>
-        
         <div class="history-card">
             <div class="history-header">
                 <h4>📋 Distribution Records</h4>
@@ -479,8 +279,8 @@
 <div id="filterModal" class="filter-modal">
     <div class="filter-modal-content">
         <h3>📅 Filter Transactions</h3>
-        <input type="date" id="filterStartDate" placeholder="Start Date">
-        <input type="date" id="filterEndDate" placeholder="End Date">
+        <input type="date" id="filterStartDate">
+        <input type="date" id="filterEndDate">
         <div class="modal-buttons">
             <button class="btn-primary" id="applyFilterBtn">Apply</button>
             <button class="btn-secondary" id="resetFilterBtn">Reset</button>
@@ -489,18 +289,92 @@
     </div>
 </div>
 
-<!-- MODALS -->
-<div id="depositModal" class="modal"><div class="modal-content"><h3>💰 Deposit Money</h3><input type="number" id="depositAmount" placeholder="Amount (PKR)"><input type="text" id="depositDesc" placeholder="Description"><div class="modal-buttons"><button class="btn-primary" id="depositBtn">Deposit</button><button class="btn-secondary" id="closeDeposit">Cancel</button></div></div></div>
-<div id="transferModal" class="modal"><div class="modal-content"><h3>🔄 Transfer to Council</h3><select id="transferCouncil"><option value="council1">Council 1</option><option value="council2">Council 2</option><option value="council3">Council 3</option><option value="council4">Council 4</option></select><input type="number" id="transferAmount" placeholder="Amount (PKR)"><input type="text" id="transferDesc" placeholder="Purpose"><div class="modal-buttons"><button class="btn-primary" id="transferBtn">Transfer</button><button class="btn-secondary" id="closeTransfer">Cancel</button></div></div></div>
-<div id="expenseModal" class="modal"><div class="modal-content"><h3>📝 Add Expense</h3><input type="text" id="expenseCategory" placeholder="Category"><input type="number" id="expenseAmount" placeholder="Amount (PKR)"><input type="text" id="expenseDesc" placeholder="Details"><div class="modal-buttons"><button class="btn-primary" id="expenseBtn">Add</button><button class="btn-secondary" id="closeExpense">Cancel</button></div></div></div>
-<div id="distributionModal" class="modal"><div class="modal-content"><h3>🤝 Distribute Aid</h3><input type="number" id="familiesCount" placeholder="Number of families"><input type="number" id="amountPerFamily" placeholder="Amount per family (PKR)"><input type="text" id="distributionDesc" placeholder="Reason"><div class="modal-buttons"><button class="btn-primary" id="distributeBtn">Distribute</button><button class="btn-secondary" id="closeDistribution">Cancel</button></div></div></div>
-<div id="chairmanSettingsModal" class="modal"><div class="modal-content"><h3>⚙️ Chairman Settings</h3><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 Change Password</button></div><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanClearHistoryBtn">🗑️ Clear History</button></div><div style="padding:10px 0;"><button class="btn-danger" style="width:100%; background:#ef4444;" id="chairmanResetWalletBtn">💣 Reset Wallet</button></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettings">Close</button></div></div></div>
-<div id="councilSettingsModal" class="modal"><div class="modal-content"><h3>⚙️ Council Settings</h3><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 Change Password</button></div><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilClearHistoryBtn">🗑️ Clear History</button></div><div style="padding:10px 0;"><button class="btn-danger" style="width:100%; background:#ef4444;" id="councilResetWalletBtn">💣 Reset Wallet</button></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettings">Close</button></div></div></div>
-<div id="changePasswordModal" class="modal"><div class="modal-content"><h3>🔐 Change Password</h3><input type="password" id="newPassword" placeholder="New password"><input type="password" id="confirmPassword" placeholder="Confirm password"><div class="modal-buttons"><button class="btn-primary" id="savePasswordBtn">Save</button><button class="btn-secondary" id="closePasswordModal">Cancel</button></div></div></div>
+<!-- Deposit Modal -->
+<div id="depositModal" class="modal"><div class="modal-content">
+    <h3>💰 Deposit Money</h3>
+    <input type="number" id="depositAmount" placeholder="Amount (PKR)">
+    <input type="text" id="depositDesc" placeholder="Description">
+    <div class="modal-buttons">
+        <button class="btn-primary" id="depositBtn">Deposit</button>
+        <button class="btn-secondary" id="closeDeposit">Cancel</button>
+    </div>
+</div></div>
+
+<!-- Transfer Modal -->
+<div id="transferModal" class="modal"><div class="modal-content">
+    <h3>🔄 Transfer to Council</h3>
+    <select id="transferCouncil">
+        <option value="council1">Council 1</option>
+        <option value="council2">Council 2</option>
+        <option value="council3">Council 3</option>
+        <option value="council4">Council 4</option>
+    </select>
+    <input type="number" id="transferAmount" placeholder="Amount (PKR)">
+    <input type="text" id="transferDesc" placeholder="Purpose">
+    <div class="modal-buttons">
+        <button class="btn-primary" id="transferBtn">Transfer</button>
+        <button class="btn-secondary" id="closeTransfer">Cancel</button>
+    </div>
+</div></div>
+
+<!-- Expense Modal -->
+<div id="expenseModal" class="modal"><div class="modal-content">
+    <h3>📝 Add Expense</h3>
+    <input type="text" id="expenseCategory" placeholder="Category">
+    <input type="number" id="expenseAmount" placeholder="Amount (PKR)">
+    <input type="text" id="expenseDesc" placeholder="Details">
+    <div class="modal-buttons">
+        <button class="btn-primary" id="expenseBtn">Add</button>
+        <button class="btn-secondary" id="closeExpense">Cancel</button>
+    </div>
+</div></div>
+
+<!-- Distribution Modal - UPDATED: Name + Phone instead of families -->
+<div id="distributionModal" class="modal"><div class="modal-content">
+    <h3>🤝 Distribute Aid</h3>
+    <input type="text" id="recipientName" placeholder="Recipient Name (Naam)">
+    <input type="tel" id="recipientPhone" placeholder="Phone Number">
+    <input type="number" id="distributionAmount" placeholder="Amount (PKR)">
+    <input type="text" id="distributionDesc" placeholder="Reason / Wajah">
+    <div class="modal-buttons">
+        <button class="btn-primary" id="distributeBtn">Distribute</button>
+        <button class="btn-secondary" id="closeDistribution">Cancel</button>
+    </div>
+</div></div>
+
+<!-- Chairman Settings Modal -->
+<div id="chairmanSettingsModal" class="modal"><div class="modal-content">
+    <h3>⚙️ Chairman Settings</h3>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 Change Password</button></div>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanClearHistoryBtn">🗑️ Clear History</button></div>
+    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="chairmanResetWalletBtn">💣 Reset Wallet</button></div>
+    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettings">Close</button></div>
+</div></div>
+
+<!-- Council Settings Modal -->
+<div id="councilSettingsModal" class="modal"><div class="modal-content">
+    <h3>⚙️ Council Settings</h3>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 Change Password</button></div>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilClearHistoryBtn">🗑️ Clear History</button></div>
+    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="councilResetWalletBtn">💣 Reset Wallet</button></div>
+    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettings">Close</button></div>
+</div></div>
+
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="modal"><div class="modal-content">
+    <h3>🔐 Change Password</h3>
+    <input type="password" id="newPassword" placeholder="New password">
+    <input type="password" id="confirmPassword" placeholder="Confirm password">
+    <div class="modal-buttons">
+        <button class="btn-primary" id="savePasswordBtn">Save</button>
+        <button class="btn-secondary" id="closePasswordModal">Cancel</button>
+    </div>
+</div></div>
+
 <div id="alertBox" class="alert"></div>
 
 <script>
-    // ========== FIREBASE CONFIG ==========
+    // ========== FIREBASE ==========
     const firebaseConfig = {
         apiKey: "AIzaSyBQQJBRqFEDpZhRJkVa5VSob8_XatE9tEA",
         authDomain: "akhowaat-live-system.firebaseapp.com",
@@ -508,488 +382,501 @@
         projectId: "akhowaat-live-system",
         storageBucket: "akhowaat-live-system.firebasestorage.app",
         messagingSenderId: "1063238865968",
-        appId: "1:1063238865968:web:5e012c7c4898b82c6149f5",
-        measurementId: "G-5FBCME0PT8"
+        appId: "1:1063238865968:web:5e012c7c4898b82c6149f5"
     };
-    
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    
+
     // ========== STATE ==========
     let currentUser = null;
     let currentCouncil = null;
     let filteredHistory = [];
-    let isTransferring = false; // ← FIX: double-click rokne ke liye
-    
+    let isTransferring = false;
+    let isDistributing = false;
+    let activeTab = 'own';
+
     const savedUser = sessionStorage.getItem('currentUser');
     const savedCouncil = sessionStorage.getItem('currentCouncil');
-    if (savedUser) {
-        currentUser = savedUser;
-        if (savedCouncil) currentCouncil = savedCouncil;
-    }
-    
+    if (savedUser) { currentUser = savedUser; if (savedCouncil) currentCouncil = savedCouncil; }
+
     let displayNames = { chairman: 'Chairman', council1: 'Council 1', council2: 'Council 2', council3: 'Council 3', council4: 'Council 4' };
-    let chairmanData = { balance: 50000, history: [{ date: new Date().toLocaleString(), type: 'Initial', amount: 50000, desc: 'Starting balance' }] };
+    let chairmanData = { balance: 0, history: [] };
     let councilsData = {
-        council1: { balance: 0, history: [] },
-        council2: { balance: 0, history: [] },
-        council3: { balance: 0, history: [] },
-        council4: { balance: 0, history: [] }
+        council1: { balance: 0, history: [] }, council2: { balance: 0, history: [] },
+        council3: { balance: 0, history: [] }, council4: { balance: 0, history: [] }
     };
     let credentials = { chairman: 'chairman123', council1: 'council123', council2: 'council123', council3: 'council123', council4: 'council123' };
-    
-    // ========== FIREBASE FUNCTIONS ==========
+
+    // ========== FIREBASE LOAD ==========
     async function loadFromFirebase() {
         try {
             const cs = await database.ref('chairmanData').get();
-            if(cs.exists()) chairmanData = cs.val();
+            if (cs.exists()) chairmanData = cs.val();
             else database.ref('chairmanData').set(chairmanData);
-            
+            if (!chairmanData.history) chairmanData.history = [];
+
             const cns = await database.ref('councilsData').get();
-            if(cns.exists()) {
-                // FIX: Har council ensure karo ke exist karti ho
+            if (cns.exists()) {
                 let loaded = cns.val();
                 ['council1','council2','council3','council4'].forEach(c => {
-                    if(!loaded[c]) loaded[c] = { balance: 0, history: [] };
-                    if(!loaded[c].history) loaded[c].history = [];
+                    if (!loaded[c]) loaded[c] = { balance: 0, history: [] };
+                    if (!loaded[c].history) loaded[c].history = [];
                 });
                 councilsData = loaded;
             } else {
                 database.ref('councilsData').set(councilsData);
             }
-            
+
             const ns = await database.ref('displayNames').get();
-            if(ns.exists()) displayNames = ns.val();
+            if (ns.exists()) { displayNames = ns.val(); updateCouncilTabNames(); }
             else database.ref('displayNames').set(displayNames);
-            
+
             const crs = await database.ref('credentials').get();
-            if(crs.exists()) credentials = crs.val();
+            if (crs.exists()) credentials = crs.val();
             else database.ref('credentials').set(credentials);
-            
+
             document.getElementById('syncStatus').innerHTML = '✅ Live Sync';
             document.getElementById('syncStatus').style.background = '#10b981';
-            
-            if(currentUser === 'chairman') updateChairmanUI();
-            else if(currentCouncil) updateCouncilUI();
+
+            if (currentUser === 'chairman') updateChairmanUI();
+            else if (currentCouncil) updateCouncilUI();
         } catch(e) {
             document.getElementById('syncStatus').innerHTML = '⚠️ Offline';
             document.getElementById('syncStatus').style.background = '#ef4444';
             console.error('Firebase load error:', e);
         }
     }
-    
+
     async function saveChairman() { await database.ref('chairmanData').set(chairmanData); }
     async function saveCouncils() { await database.ref('councilsData').set(councilsData); }
-    async function saveDisplayNames() { await database.ref('displayNames').set(displayNames); }
     async function saveCredentials() { await database.ref('credentials').set(credentials); }
-    
+
     function setupRealtimeListeners() {
-        database.ref('chairmanData').on('value', (s) => {
-            if(s.exists()) {
+        database.ref('chairmanData').on('value', s => {
+            if (s.exists()) {
                 chairmanData = s.val();
-                if(!chairmanData.history) chairmanData.history = [];
-                if(currentUser === 'chairman') updateChairmanUI();
+                if (!chairmanData.history) chairmanData.history = [];
+                if (currentUser === 'chairman') updateChairmanUI();
             }
         });
-        database.ref('councilsData').on('value', (s) => {
-            if(s.exists()) {
+        database.ref('councilsData').on('value', s => {
+            if (s.exists()) {
                 let loaded = s.val();
                 ['council1','council2','council3','council4'].forEach(c => {
-                    if(!loaded[c]) loaded[c] = { balance: 0, history: [] };
-                    if(!loaded[c].history) loaded[c].history = [];
+                    if (!loaded[c]) loaded[c] = { balance: 0, history: [] };
+                    if (!loaded[c].history) loaded[c].history = [];
                 });
                 councilsData = loaded;
-                if(currentUser === 'chairman') updateChairmanUI();
-                else if(currentCouncil) updateCouncilUI();
+                if (currentUser === 'chairman') updateChairmanUI();
+                else if (currentCouncil) updateCouncilUI();
             }
         });
+        database.ref('displayNames').on('value', s => {
+            if (s.exists()) { displayNames = s.val(); updateCouncilTabNames(); }
+        });
     }
-    
+
+    function updateCouncilTabNames() {
+        ['council1','council2','council3','council4'].forEach(c => {
+            let el = document.getElementById('tab-' + c);
+            if (el) el.textContent = displayNames[c] || c;
+        });
+    }
+
     function showAlert(msg, type) {
         let d = document.getElementById('alertBox');
         d.className = 'alert alert-' + type;
         d.innerHTML = msg;
         d.style.display = 'block';
-        setTimeout(() => d.style.display = 'none', 3000);
+        setTimeout(() => d.style.display = 'none', 3500);
     }
-    
-    // ========== DATE FILTER ==========
-    function openFilterModal() { document.getElementById('filterModal').style.display = 'flex'; }
-    function closeFilterModal() { document.getElementById('filterModal').style.display = 'none'; }
-    
-    function applyDateFilter() {
-        let startDate = document.getElementById('filterStartDate').value;
-        let endDate = document.getElementById('filterEndDate').value;
-        
-        if (!startDate && !endDate) {
-            filteredHistory = [];
-            displayChairmanHistory();
-            closeFilterModal();
-            return;
-        }
-        
-        filteredHistory = (chairmanData.history || []).filter(item => {
-            let itemDate = new Date(item.date);
-            let match = true;
-            if (startDate) {
-                let sDate = new Date(startDate); sDate.setHours(0,0,0,0);
-                if (itemDate < sDate) match = false;
-            }
-            if (endDate && match) {
-                let eDate = new Date(endDate); eDate.setHours(23,59,59,999);
-                if (itemDate > eDate) match = false;
-            }
-            return match;
+
+    // ========== TAB SWITCH (Chairman view) ==========
+    function switchTab(tab) {
+        activeTab = tab;
+        document.querySelectorAll('.council-tab').forEach(t => t.classList.remove('active'));
+        // find clicked tab
+        let allTabs = document.querySelectorAll('.council-tab');
+        allTabs.forEach(t => {
+            let tabId = t.getAttribute('onclick').replace("switchTab('","").replace("')","");
+            if (tabId === tab) t.classList.add('active');
         });
-        
-        displayChairmanHistory();
-        showAlert('Filter applied!', 'success');
-        closeFilterModal();
-    }
-    
-    function resetFilter() {
-        document.getElementById('filterStartDate').value = '';
-        document.getElementById('filterEndDate').value = '';
         filteredHistory = [];
         displayChairmanHistory();
-        showAlert('Filter reset!', 'success');
-        closeFilterModal();
     }
-    
-    // ========== UI UPDATE ==========
+
+    // ========== CHAIRMAN UI ==========
     function updateChairmanUI() {
         document.getElementById('chairmanBalance').innerHTML = 'PKR ' + (chairmanData.balance || 0).toLocaleString();
         let td=0, tt=0, te=0;
-        for(let h of (chairmanData.history || [])) {
-            if(h.type === 'Deposit') td += h.amount;
-            else if(h.type === 'Transfer') tt += Math.abs(h.amount);
-            else if(h.type === 'Expense') te += Math.abs(h.amount);
+        for (let h of (chairmanData.history || [])) {
+            if (h.type === 'Deposit') td += h.amount;
+            else if (h.type === 'Transfer') tt += Math.abs(h.amount);
+            else if (h.type === 'Expense') te += Math.abs(h.amount);
         }
         document.getElementById('totalDeposit').innerHTML = 'PKR ' + td.toLocaleString();
         document.getElementById('totalTransfer').innerHTML = 'PKR ' + tt.toLocaleString();
         document.getElementById('totalExpense').innerHTML = 'PKR ' + te.toLocaleString();
+        updateCouncilTabNames();
         displayChairmanHistory();
     }
-    
+
     function displayChairmanHistory() {
-        let historyToShow = filteredHistory.length > 0 ? filteredHistory : (chairmanData.history || []);
         let html = '';
-        for(let h of historyToShow.slice(0,50)) {
-            let isPos = h.amount > 0;
-            let icon = isPos ? (h.type === 'Deposit' ? '💰' : '🔄') : (h.type === 'Transfer' ? '🔄' : '📝');
-            let sign = isPos ? '+' : '-';
-            html += `<div class="transaction-item">
-                <div class="transaction-left">
-                    <div class="transaction-icon">${icon}</div>
-                    <div>
-                        <div class="transaction-type">${h.type}</div>
-                        <div class="transaction-date">${h.date}</div>
-                        ${h.desc ? `<div style="font-size:10px;color:#888;">${h.desc}</div>` : ''}
-                    </div>
-                </div>
-                <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">${sign} PKR ${Math.abs(h.amount).toLocaleString()}</div>
-            </div>`;
+
+        if (activeTab === 'own') {
+            // Chairman's own transactions
+            let historyToShow = filteredHistory.length > 0 ? filteredHistory : (chairmanData.history || []);
+            for (let h of historyToShow.slice(0, 100)) {
+                let isPos = h.amount > 0;
+                let icon = h.type === 'Deposit' ? '💰' : h.type === 'Transfer' ? '🔄' : '📝';
+                html += txnRow(icon, h.type, h.date, h.desc || '', isPos, h.amount);
+            }
+            if (historyToShow.length === 0) html = '<div class="empty-state">No transactions found</div>';
+        } else {
+            // Council distribution records in chairman view
+            let cHistory = (councilsData[activeTab] && councilsData[activeTab].history) ? councilsData[activeTab].history : [];
+            let councilName = displayNames[activeTab] || activeTab;
+            for (let h of cHistory.slice(0, 100)) {
+                let icon = h.type === 'Received' ? '💰' : '🤝';
+                let isPos = h.type === 'Received';
+                let detail = '';
+                if (h.recipientName) detail += h.recipientName;
+                if (h.recipientPhone) detail += ' | ' + h.recipientPhone;
+                if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
+                html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
+            }
+            if (cHistory.length === 0) html = '<div class="empty-state">No records for ' + councilName + '</div>';
         }
-        if(historyToShow.length === 0) html = '<div class="empty-state">No transactions found</div>';
+
         document.getElementById('chairmanHistory').innerHTML = html;
     }
-    
+
+    function txnRow(icon, type, date, desc, isPos, amount) {
+        return `<div class="transaction-item">
+            <div class="transaction-left">
+                <div class="transaction-icon">${icon}</div>
+                <div>
+                    <div class="transaction-type">${type}</div>
+                    <div class="transaction-date">${date}</div>
+                    ${desc ? `<div style="font-size:10px;color:#888;">${desc}</div>` : ''}
+                </div>
+            </div>
+            <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">
+                ${isPos ? '+' : '-'} PKR ${Math.abs(amount).toLocaleString()}
+            </div>
+        </div>`;
+    }
+
+    // ========== COUNCIL UI ==========
     function updateCouncilUI() {
         let data = councilsData[currentCouncil] || { balance: 0, history: [] };
         document.getElementById('councilBalance').innerHTML = 'PKR ' + (data.balance || 0).toLocaleString();
-        let councilDisplay = currentCouncil ? currentCouncil.replace('council', 'Council ') : 'Council';
-        document.getElementById('councilName').innerHTML = displayNames[currentCouncil] || councilDisplay;
-        let tr=0, tf=0;
-        for(let h of (data.history || [])) {
-            if(h.type === 'Received') tr += (h.amount || 0);
-            if(h.type === 'Distribution') tf += (h.families || 0);
+        document.getElementById('councilName').innerHTML = displayNames[currentCouncil] || currentCouncil;
+
+        let tr = 0, tp = 0;
+        for (let h of (data.history || [])) {
+            if (h.type === 'Received') tr += (h.amount || 0);
+            if (h.type === 'Distribution') tp++;
         }
         document.getElementById('totalReceived').innerHTML = 'PKR ' + tr.toLocaleString();
-        document.getElementById('totalFamilies').innerHTML = tf;
-        document.getElementById('totalDistributions').innerHTML = (data.history || []).length;
-        
+        document.getElementById('totalPersons').innerHTML = tp;
+        document.getElementById('totalDistributions').innerHTML = (data.history || []).filter(h => h.type === 'Distribution').length;
+
         let html = '';
-        for(let h of (data.history || []).slice(0,50)) {
+        for (let h of (data.history || []).slice(0, 100)) {
             let isPos = h.type === 'Received';
-            html += `<div class="transaction-item">
-                <div class="transaction-left">
-                    <div class="transaction-icon">${isPos ? '💰' : '🤝'}</div>
-                    <div>
-                        <div class="transaction-type">${h.type}</div>
-                        <div class="transaction-date">${h.date}</div>
-                        ${h.families ? `<div style="font-size:10px;color:#888;">${h.families} families</div>` : ''}
-                        ${h.desc ? `<div style="font-size:10px;color:#888;">${h.desc}</div>` : ''}
-                    </div>
-                </div>
-                <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">${isPos ? '+' : '-'}PKR ${(h.amount || 0).toLocaleString()}</div>
-            </div>`;
+            let icon = isPos ? '💰' : '🤝';
+            let detail = '';
+            if (h.recipientName) detail += '👤 ' + h.recipientName;
+            if (h.recipientPhone) detail += ' | 📞 ' + h.recipientPhone;
+            if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
+            html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
         }
-        if((data.history || []).length === 0) html = '<div class="empty-state">No distributions yet</div>';
+        if ((data.history || []).length === 0) html = '<div class="empty-state">No records yet</div>';
         document.getElementById('councilHistory').innerHTML = html;
     }
-    
+
     // ========== DEPOSIT ==========
     async function deposit() {
         let amount = parseFloat(document.getElementById('depositAmount').value);
         let desc = document.getElementById('depositDesc').value || 'Manual deposit';
-        if(isNaN(amount) || amount <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        
+        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+
         chairmanData.balance = (chairmanData.balance || 0) + amount;
-        if(!chairmanData.history) chairmanData.history = [];
-        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Deposit', amount: amount, desc: desc });
-        
+        if (!chairmanData.history) chairmanData.history = [];
+        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Deposit', amount, desc });
+
         await saveChairman();
         updateChairmanUI();
         closeModal('depositModal');
         document.getElementById('depositAmount').value = '';
         document.getElementById('depositDesc').value = '';
-        showAlert('PKR ' + amount.toLocaleString() + ' deposited!', 'success');
+        showAlert('PKR ' + amount.toLocaleString() + ' deposit ho gaya!', 'success');
     }
-    
-    // ========== TRANSFER - FIXED ==========
+
+    // ========== TRANSFER ==========
     async function transfer() {
-        // FIX 1: Double click protection
-        if(isTransferring) return;
-        
+        if (isTransferring) return;
         let council = document.getElementById('transferCouncil').value;
         let amount = parseFloat(document.getElementById('transferAmount').value);
         let desc = document.getElementById('transferDesc').value || 'Fund transfer';
-        
-        if(isNaN(amount) || amount <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        if(amount > (chairmanData.balance || 0)) {
-            showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
-            return;
+
+        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+        if (amount > (chairmanData.balance || 0)) {
+            showAlert('Balance kam hai! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger'); return;
         }
-        
+
         isTransferring = true;
         document.getElementById('transferBtn').innerHTML = 'Processing...';
         document.getElementById('transferBtn').disabled = true;
-        
+
         try {
-            // FIX 2: Firebase se latest data pehle lo taake stale data na ho
-            const latestChairman = await database.ref('chairmanData').get();
-            if(latestChairman.exists()) chairmanData = latestChairman.val();
-            if(!chairmanData.history) chairmanData.history = [];
-            
-            const latestCouncils = await database.ref('councilsData').get();
-            if(latestCouncils.exists()) {
-                councilsData = latestCouncils.val();
+            const lc = await database.ref('chairmanData').get();
+            if (lc.exists()) chairmanData = lc.val();
+            if (!chairmanData.history) chairmanData.history = [];
+
+            const lcs = await database.ref('councilsData').get();
+            if (lcs.exists()) councilsData = lcs.val();
+            if (!councilsData[council]) councilsData[council] = { balance: 0, history: [] };
+            if (!councilsData[council].history) councilsData[council].history = [];
+            if (typeof councilsData[council].balance !== 'number') councilsData[council].balance = 0;
+
+            if (amount > (chairmanData.balance || 0)) {
+                showAlert('Balance kam hai!', 'danger'); return;
             }
-            
-            // FIX 3: Council ensure karo ke properly exist kare
-            if(!councilsData[council]) councilsData[council] = { balance: 0, history: [] };
-            if(!councilsData[council].history) councilsData[council].history = [];
-            if(typeof councilsData[council].balance !== 'number') councilsData[council].balance = 0;
-            
-            // Re-check balance after fresh fetch
-            if(amount > (chairmanData.balance || 0)) {
-                showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
-                return;
-            }
-            
+
             let now = new Date().toLocaleString();
-            
-            // Chairman se deduct
+            let cName = displayNames[council] || council;
+
             chairmanData.balance = (chairmanData.balance || 0) - amount;
-            chairmanData.history.unshift({
-                date: now,
-                type: 'Transfer',
-                amount: -amount,
-                desc: 'To ' + displayNames[council] + ': ' + desc
-            });
-            
-            // Council mein add
+            chairmanData.history.unshift({ date: now, type: 'Transfer', amount: -amount, desc: cName + ' ko: ' + desc });
+
             councilsData[council].balance = (councilsData[council].balance || 0) + amount;
-            councilsData[council].history.unshift({
-                date: now,
-                type: 'Received',
-                amount: amount,
-                desc: 'Received from Chairman: ' + desc
-            });
-            
-            // FIX 4: Dono ek saath save karo Firebase transaction use karke
-            await database.ref().update({
-                'chairmanData': chairmanData,
-                'councilsData': councilsData
-            });
-            
+            councilsData[council].history.unshift({ date: now, type: 'Received', amount, desc: 'Chairman se mila: ' + desc });
+
+            await database.ref().update({ 'chairmanData': chairmanData, 'councilsData': councilsData });
             updateChairmanUI();
-            if(currentCouncil === council) updateCouncilUI();
-            
+            if (currentCouncil === council) updateCouncilUI();
             closeModal('transferModal');
             document.getElementById('transferAmount').value = '';
             document.getElementById('transferDesc').value = '';
-            showAlert('✅ PKR ' + amount.toLocaleString() + ' transferred to ' + displayNames[council] + '!', 'success');
-            
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + cName + ' ko transfer ho gaya!', 'success');
         } catch(err) {
             console.error('Transfer error:', err);
-            showAlert('Transfer failed! Please try again.', 'danger');
+            showAlert('Transfer fail hua! Dobara try karein.', 'danger');
         } finally {
             isTransferring = false;
             document.getElementById('transferBtn').innerHTML = 'Transfer';
             document.getElementById('transferBtn').disabled = false;
         }
     }
-    
+
     // ========== EXPENSE ==========
     async function addExpense() {
         let category = document.getElementById('expenseCategory').value;
         let amount = parseFloat(document.getElementById('expenseAmount').value);
         let desc = document.getElementById('expenseDesc').value || '';
-        
-        if(!category) { showAlert('Enter category', 'danger'); return; }
-        if(isNaN(amount) || amount <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        if(amount > (chairmanData.balance || 0)) { showAlert('Insufficient balance!', 'danger'); return; }
-        
-        if(!chairmanData.history) chairmanData.history = [];
+        if (!category) { showAlert('Category enter karein', 'danger'); return; }
+        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+        if (amount > (chairmanData.balance || 0)) { showAlert('Balance kam hai!', 'danger'); return; }
+
+        if (!chairmanData.history) chairmanData.history = [];
         chairmanData.balance = (chairmanData.balance || 0) - amount;
         chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Expense', amount: -amount, desc: category + ': ' + desc });
-        
+
         await saveChairman();
         updateChairmanUI();
         closeModal('expenseModal');
         document.getElementById('expenseCategory').value = '';
         document.getElementById('expenseAmount').value = '';
         document.getElementById('expenseDesc').value = '';
-        showAlert('Expense added: PKR ' + amount.toLocaleString(), 'success');
+        showAlert('Expense add ho gaya: PKR ' + amount.toLocaleString(), 'success');
     }
-    
-    // ========== DISTRIBUTE ==========
+
+    // ========== DISTRIBUTE - UPDATED ==========
     async function distribute() {
-        let families = parseInt(document.getElementById('familiesCount').value);
-        let perFamily = parseFloat(document.getElementById('amountPerFamily').value);
-        let desc = document.getElementById('distributionDesc').value || 'Aid distribution';
-        let total = families * perFamily;
-        
-        if(isNaN(families) || families <= 0) { showAlert('Enter valid number of families', 'danger'); return; }
-        if(isNaN(perFamily) || perFamily <= 0) { showAlert('Enter valid amount per family', 'danger'); return; }
-        if(total > (councilsData[currentCouncil]?.balance || 0)) { showAlert('Insufficient balance in council wallet!', 'danger'); return; }
-        
-        if(!councilsData[currentCouncil]) councilsData[currentCouncil] = { balance: 0, history: [] };
-        if(!councilsData[currentCouncil].history) councilsData[currentCouncil].history = [];
-        councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - total;
-        councilsData[currentCouncil].history.unshift({
-            date: new Date().toLocaleString(),
-            type: 'Distribution',
-            amount: total,
-            families: families,
-            desc: desc + ' (PKR ' + perFamily + '/family)'
-        });
-        
-        await saveCouncils();
-        updateCouncilUI();
-        closeModal('distributionModal');
-        document.getElementById('familiesCount').value = '';
-        document.getElementById('amountPerFamily').value = '';
-        document.getElementById('distributionDesc').value = '';
-        showAlert('PKR ' + total.toLocaleString() + ' distributed to ' + families + ' families!', 'success');
+        if (isDistributing) return;
+
+        let name = document.getElementById('recipientName').value.trim();
+        let phone = document.getElementById('recipientPhone').value.trim();
+        let amount = parseFloat(document.getElementById('distributionAmount').value);
+        let desc = document.getElementById('distributionDesc').value.trim() || 'Aid distribution';
+
+        if (!name) { showAlert('Recipient ka naam zaroor likhein', 'danger'); return; }
+        if (!phone) { showAlert('Phone number zaroor likhein', 'danger'); return; }
+        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+        if (amount > (councilsData[currentCouncil]?.balance || 0)) {
+            showAlert('Council wallet mein balance kam hai!', 'danger'); return;
+        }
+
+        isDistributing = true;
+        document.getElementById('distributeBtn').innerHTML = 'Processing...';
+        document.getElementById('distributeBtn').disabled = true;
+
+        try {
+            // Fresh data fetch
+            const lcs = await database.ref('councilsData').get();
+            if (lcs.exists()) councilsData = lcs.val();
+            if (!councilsData[currentCouncil]) councilsData[currentCouncil] = { balance: 0, history: [] };
+            if (!councilsData[currentCouncil].history) councilsData[currentCouncil].history = [];
+
+            const lc = await database.ref('chairmanData').get();
+            if (lc.exists()) chairmanData = lc.val();
+            if (!chairmanData.history) chairmanData.history = [];
+
+            if (amount > (councilsData[currentCouncil].balance || 0)) {
+                showAlert('Council wallet mein balance kam hai!', 'danger'); return;
+            }
+
+            let now = new Date().toLocaleString();
+            let cName = displayNames[currentCouncil] || currentCouncil;
+
+            // Council se deduct + record
+            councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - amount;
+            councilsData[currentCouncil].history.unshift({
+                date: now,
+                type: 'Distribution',
+                amount,
+                recipientName: name,
+                recipientPhone: phone,
+                desc: desc
+            });
+
+            // Chairman history mein bhi council ka record aaye
+            chairmanData.history.unshift({
+                date: now,
+                type: 'Council Distribution',
+                amount: -amount,
+                desc: cName + ' → ' + name + ' (' + phone + '): ' + desc
+            });
+
+            await database.ref().update({ 'chairmanData': chairmanData, 'councilsData': councilsData });
+
+            updateCouncilUI();
+            if (currentUser === 'chairman') updateChairmanUI();
+
+            closeModal('distributionModal');
+            document.getElementById('recipientName').value = '';
+            document.getElementById('recipientPhone').value = '';
+            document.getElementById('distributionAmount').value = '';
+            document.getElementById('distributionDesc').value = '';
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + name + ' ko mil gaya!', 'success');
+        } catch(err) {
+            console.error('Distribute error:', err);
+            showAlert('Distribution fail hui! Dobara try karein.', 'danger');
+        } finally {
+            isDistributing = false;
+            document.getElementById('distributeBtn').innerHTML = 'Distribute';
+            document.getElementById('distributeBtn').disabled = false;
+        }
     }
-    
+
+    // ========== FILTER ==========
+    function openFilterModal() { document.getElementById('filterModal').style.display = 'flex'; }
+    function closeFilterModal() { document.getElementById('filterModal').style.display = 'none'; }
+
+    function applyDateFilter() {
+        let startDate = document.getElementById('filterStartDate').value;
+        let endDate = document.getElementById('filterEndDate').value;
+        if (!startDate && !endDate) { filteredHistory = []; displayChairmanHistory(); closeFilterModal(); return; }
+
+        let src = activeTab === 'own' ? (chairmanData.history || []) : ((councilsData[activeTab] && councilsData[activeTab].history) || []);
+        filteredHistory = src.filter(item => {
+            let itemDate = new Date(item.date); let match = true;
+            if (startDate) { let s = new Date(startDate); s.setHours(0,0,0,0); if (itemDate < s) match = false; }
+            if (endDate && match) { let e = new Date(endDate); e.setHours(23,59,59,999); if (itemDate > e) match = false; }
+            return match;
+        });
+        displayChairmanHistory();
+        showAlert('Filter apply ho gaya!', 'success');
+        closeFilterModal();
+    }
+
+    function resetFilter() {
+        document.getElementById('filterStartDate').value = '';
+        document.getElementById('filterEndDate').value = '';
+        filteredHistory = [];
+        displayChairmanHistory();
+        showAlert('Filter reset ho gaya!', 'success');
+        closeFilterModal();
+    }
+
     // ========== SETTINGS ==========
     function openChairmanSettings() { openModal('chairmanSettingsModal'); }
     function openCouncilSettings() { openModal('councilSettingsModal'); }
-    
+
     async function chairmanChangePassword() {
         openModal('changePasswordModal');
-        window.passwordCallback = async function(newPass) {
-            credentials.chairman = newPass;
-            await saveCredentials();
-            closeModal('changePasswordModal');
-            showAlert('Password changed!', 'success');
+        window.passwordCallback = async function(p) {
+            credentials.chairman = p; await saveCredentials();
+            closeModal('changePasswordModal'); showAlert('Password change ho gaya!', 'success');
         };
     }
-    
     async function councilChangePassword() {
         openModal('changePasswordModal');
-        window.passwordCallback = async function(newPass) {
-            credentials[currentCouncil] = newPass;
-            await saveCredentials();
-            closeModal('changePasswordModal');
-            showAlert('Password changed!', 'success');
+        window.passwordCallback = async function(p) {
+            credentials[currentCouncil] = p; await saveCredentials();
+            closeModal('changePasswordModal'); showAlert('Password change ho gaya!', 'success');
         };
     }
-    
     async function chairmanClearHistory() {
-        if(confirm('Clear all history? Balance will remain.')) {
-            chairmanData.history = [];
-            await saveChairman();
-            updateChairmanUI();
-            showAlert('History cleared!', 'success');
+        if (confirm('History clear karein? Balance rahega.')) {
+            chairmanData.history = []; await saveChairman(); updateChairmanUI(); showAlert('History clear ho gayi!', 'success');
         }
     }
-    
     async function councilClearHistory() {
-        if(confirm('Clear all history? Balance will remain.')) {
-            councilsData[currentCouncil].history = [];
-            await saveCouncils();
-            updateCouncilUI();
-            showAlert('History cleared!', 'success');
+        if (confirm('History clear karein? Balance rahega.')) {
+            councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); showAlert('History clear ho gayi!', 'success');
         }
     }
-    
     async function chairmanResetWallet() {
-        if(confirm('FULL RESET! All data will be lost! Cannot undo!')) {
-            chairmanData = { balance: 0, history: [] };
-            await saveChairman();
-            updateChairmanUI();
-            showAlert('Wallet reset!', 'success');
+        if (confirm('POORA RESET! Sab data delete ho jayega!')) {
+            chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); showAlert('Wallet reset ho gaya!', 'success');
         }
     }
-    
     async function councilResetWallet() {
-        if(confirm('FULL RESET! All data will be lost! Cannot undo!')) {
-            councilsData[currentCouncil] = { balance: 0, history: [] };
-            await saveCouncils();
-            updateCouncilUI();
-            showAlert('Wallet reset!', 'success');
+        if (confirm('POORA RESET! Sab data delete ho jayega!')) {
+            councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); showAlert('Wallet reset ho gaya!', 'success');
         }
     }
-    
     function savePassword() {
-        let newPass = document.getElementById('newPassword').value;
-        let confirmPass = document.getElementById('confirmPassword').value;
-        if(!newPass) { showAlert('Enter a password', 'danger'); return; }
-        if(newPass !== confirmPass) { showAlert('Passwords do not match', 'danger'); return; }
-        if(window.passwordCallback) {
-            window.passwordCallback(newPass);
-            window.passwordCallback = null;
-        }
+        let np = document.getElementById('newPassword').value;
+        let cp = document.getElementById('confirmPassword').value;
+        if (!np) { showAlert('Password enter karein', 'danger'); return; }
+        if (np !== cp) { showAlert('Passwords match nahi kar rahe', 'danger'); return; }
+        if (window.passwordCallback) { window.passwordCallback(np); window.passwordCallback = null; }
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
     }
-    
+
     function shareReport() {
         let msg = '';
-        if(currentUser === 'chairman') {
+        if (currentUser === 'chairman') {
             msg = 'Akhowaat Foundation - Chairman Report\n💰 Balance: PKR ' + (chairmanData.balance || 0).toLocaleString();
-            msg += '\n📊 Total Deposits: PKR ' + (chairmanData.history || []).filter(h => h.type === 'Deposit').reduce((a,b) => a + (b.amount || 0), 0).toLocaleString();
-            msg += '\n📤 Total Transfers: PKR ' + (chairmanData.history || []).filter(h => h.type === 'Transfer').reduce((a,b) => a + Math.abs(b.amount || 0), 0).toLocaleString();
+            msg += '\n📊 Total Deposits: PKR ' + (chairmanData.history || []).filter(h=>h.type==='Deposit').reduce((a,b)=>a+(b.amount||0),0).toLocaleString();
+            msg += '\n📤 Total Transfers: PKR ' + (chairmanData.history || []).filter(h=>h.type==='Transfer').reduce((a,b)=>a+Math.abs(b.amount||0),0).toLocaleString();
         } else {
-            msg = 'Akhowaat Foundation - ' + displayNames[currentCouncil] + '\n💰 Balance: PKR ' + (councilsData[currentCouncil]?.balance || 0).toLocaleString();
+            msg = 'Akhowaat Foundation - ' + (displayNames[currentCouncil] || currentCouncil);
+            msg += '\n💰 Balance: PKR ' + (councilsData[currentCouncil]?.balance || 0).toLocaleString();
         }
         window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     }
-    
+
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    
+
     // ========== LOGIN / LOGOUT ==========
     async function login() {
         let role = document.getElementById('roleSelect').value;
         let pwd = document.getElementById('password').value;
         let err = document.getElementById('loginError');
-        
-        // Fresh credentials load karo login par
-        try {
-            const crs = await database.ref('credentials').get();
-            if(crs.exists()) credentials = crs.val();
-        } catch(e) {}
-        
-        if(credentials[role] === pwd) {
+        try { const crs = await database.ref('credentials').get(); if (crs.exists()) credentials = crs.val(); } catch(e) {}
+
+        if (credentials[role] === pwd) {
             currentUser = role;
             sessionStorage.setItem('currentUser', currentUser);
-            
-            if(role === 'chairman') {
+            if (role === 'chairman') {
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('chairmanDashboard').style.display = 'block';
                 updateChairmanUI();
@@ -1003,33 +890,31 @@
             document.getElementById('password').value = '';
         } else {
             err.style.display = 'block';
-            err.innerHTML = 'Invalid password! Use: chairman123 / council123';
+            err.innerHTML = '❌ Galat password! Dobara try karein.';
             setTimeout(() => err.style.display = 'none', 3000);
         }
     }
-    
+
     function logout() {
-        currentUser = null;
-        currentCouncil = null;
-        sessionStorage.removeItem('currentUser');
-        sessionStorage.removeItem('currentCouncil');
+        currentUser = null; currentCouncil = null; activeTab = 'own'; filteredHistory = [];
+        sessionStorage.removeItem('currentUser'); sessionStorage.removeItem('currentCouncil');
         document.getElementById('loginPage').style.display = 'flex';
         document.getElementById('chairmanDashboard').style.display = 'none';
         document.getElementById('councilDashboard').style.display = 'none';
     }
-    
+
     // ========== EVENT LISTENERS ==========
     document.getElementById('loginBtn').onclick = login;
     document.getElementById('chairmanLogout').onclick = logout;
     document.getElementById('councilLogout').onclick = logout;
-    
+
     document.getElementById('openDeposit').onclick = () => openModal('depositModal');
     document.getElementById('openTransfer').onclick = () => openModal('transferModal');
     document.getElementById('openExpense').onclick = () => openModal('expenseModal');
     document.getElementById('openDistribution').onclick = () => openModal('distributionModal');
     document.getElementById('openChairmanSettings').onclick = openChairmanSettings;
     document.getElementById('openCouncilSettings').onclick = openCouncilSettings;
-    
+
     document.getElementById('depositBtn').onclick = deposit;
     document.getElementById('closeDeposit').onclick = () => closeModal('depositModal');
     document.getElementById('transferBtn').onclick = transfer;
@@ -1038,30 +923,29 @@
     document.getElementById('closeExpense').onclick = () => closeModal('expenseModal');
     document.getElementById('distributeBtn').onclick = distribute;
     document.getElementById('closeDistribution').onclick = () => closeModal('distributionModal');
-    
+
     document.getElementById('shareBtn').onclick = shareReport;
     document.getElementById('councilShareBtn').onclick = shareReport;
-    
+
     document.getElementById('openFilterBtn').onclick = openFilterModal;
     document.getElementById('closeFilterBtn').onclick = closeFilterModal;
     document.getElementById('applyFilterBtn').onclick = applyDateFilter;
     document.getElementById('resetFilterBtn').onclick = resetFilter;
-    
+
     document.getElementById('chairmanChangePassword').onclick = chairmanChangePassword;
     document.getElementById('chairmanClearHistoryBtn').onclick = chairmanClearHistory;
     document.getElementById('chairmanResetWalletBtn').onclick = chairmanResetWallet;
     document.getElementById('closeChairmanSettings').onclick = () => closeModal('chairmanSettingsModal');
-    
+
     document.getElementById('councilChangePassword').onclick = councilChangePassword;
     document.getElementById('councilClearHistoryBtn').onclick = councilClearHistory;
     document.getElementById('councilResetWalletBtn').onclick = councilResetWallet;
     document.getElementById('closeCouncilSettings').onclick = () => closeModal('councilSettingsModal');
-    
+
     document.getElementById('savePasswordBtn').onclick = savePassword;
     document.getElementById('closePasswordModal').onclick = () => closeModal('changePasswordModal');
-    
-    document.getElementById('password').addEventListener('keypress', (e) => { if(e.key === 'Enter') login(); });
-    
+    document.getElementById('password').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+
     // ========== INIT ==========
     if (savedUser) {
         if (savedUser === 'chairman') {
@@ -1072,10 +956,8 @@
             document.getElementById('councilDashboard').style.display = 'block';
         }
     }
-    
     loadFromFirebase();
     setupRealtimeListeners();
-    console.log("Firebase Live Sync Active - Transfer Bug Fixed!");
 </script>
 </body>
 </html>
