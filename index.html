@@ -260,7 +260,6 @@
             color: #999;
         }
         
-        /* Filter Modal */
         .filter-modal {
             display: none;
             position: fixed;
@@ -515,12 +514,11 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     
-    // Session persistence - refresh par logout nahi hoga
+    // Session persistence
     let currentUser = null;
     let currentCouncil = null;
     let filteredHistory = [];
     
-    // Check saved session on load
     const savedUser = sessionStorage.getItem('currentUser');
     const savedCouncil = sessionStorage.getItem('currentCouncil');
     if (savedUser) {
@@ -581,14 +579,8 @@
         setTimeout(() => d.style.display = 'none', 3000);
     }
     
-    // Date Filter Functions
-    function openFilterModal() {
-        document.getElementById('filterModal').style.display = 'flex';
-    }
-    
-    function closeFilterModal() {
-        document.getElementById('filterModal').style.display = 'none';
-    }
+    function openFilterModal() { document.getElementById('filterModal').style.display = 'flex'; }
+    function closeFilterModal() { document.getElementById('filterModal').style.display = 'none'; }
     
     function applyDateFilter() {
         let startDate = document.getElementById('filterStartDate').value;
@@ -604,7 +596,6 @@
         filteredHistory = chairmanData.history.filter(item => {
             let itemDate = new Date(item.date);
             let match = true;
-            
             if (startDate) {
                 let sDate = new Date(startDate);
                 sDate.setHours(0, 0, 0, 0);
@@ -643,13 +634,11 @@
         document.getElementById('totalDeposit').innerHTML = 'PKR ' + td.toLocaleString();
         document.getElementById('totalTransfer').innerHTML = 'PKR ' + tt.toLocaleString();
         document.getElementById('totalExpense').innerHTML = 'PKR ' + te.toLocaleString();
-        
         displayChairmanHistory();
     }
     
     function displayChairmanHistory() {
         let historyToShow = filteredHistory.length > 0 ? filteredHistory : chairmanData.history;
-        
         let html = '';
         for(let h of historyToShow.slice(0,50)) {
             let isPos = h.amount > 0;
@@ -732,50 +721,65 @@
         showAlert('PKR ' + amount.toLocaleString() + ' deposited!', 'success');
     }
     
-    // ========== TRANSFER FUNCTION - FIXED ==========
+    // ========== TRANSFER FUNCTION - FULLY FIXED ==========
     async function transfer() {
+        // Get values from modal
         let council = document.getElementById('transferCouncil').value;
         let amount = parseFloat(document.getElementById('transferAmount').value);
         let desc = document.getElementById('transferDesc').value || 'Fund transfer';
         
+        // Validation
         if(isNaN(amount) || amount <= 0) {
-            showAlert('Enter valid amount', 'danger');
+            showAlert('Please enter a valid amount', 'danger');
             return;
         }
         
         if(amount > (chairmanData.balance || 0)) {
-            showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
+            showAlert('Insufficient balance! Current balance: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
             return;
         }
         
-        // Deduct from chairman
+        // 1. Deduct from chairman
         chairmanData.balance = (chairmanData.balance || 0) - amount;
         chairmanData.history.unshift({
             date: new Date().toLocaleString(),
-            type: 'Transfer',
+            type: 'Transfer to ' + council,
             amount: -amount,
-            desc: 'To ' + council + ': ' + desc
+            desc: desc
         });
         
-        // Add to council
-        if (!councilsData[council]) councilsData[council] = { balance: 0, history: [] };
+        // 2. Add to council
+        if (!councilsData[council]) {
+            councilsData[council] = { balance: 0, history: [] };
+        }
         councilsData[council].balance = (councilsData[council].balance || 0) + amount;
         councilsData[council].history.unshift({
             date: new Date().toLocaleString(),
-            type: 'Received',
+            type: 'Received from Chairman',
             amount: amount,
-            desc: 'Received from Chairman: ' + desc
+            desc: desc
         });
         
+        // 3. Save to Firebase
         await saveChairman();
         await saveCouncils();
-        updateChairmanUI();
-        if(currentCouncil === council) updateCouncilUI();
         
+        // 4. Update UI
+        updateChairmanUI();
+        if(currentCouncil === council) {
+            updateCouncilUI();
+        }
+        
+        // 5. Close modal and clear fields
         closeModal('transferModal');
         document.getElementById('transferAmount').value = '';
         document.getElementById('transferDesc').value = '';
-        showAlert('PKR ' + amount.toLocaleString() + ' transferred to ' + council + '!', 'success');
+        
+        // 6. Show success message
+        showAlert('PKR ' + amount.toLocaleString() + ' successfully transferred to ' + council + '!', 'success');
+        
+        // 7. Log for debugging
+        console.log('Transfer completed:', { council, amount, desc, newChairmanBalance: chairmanData.balance, newCouncilBalance: councilsData[council].balance });
     }
     
     // ========== EXPENSE FUNCTION ==========
@@ -957,7 +961,6 @@
         
         if(credentials[role] === pwd) {
             currentUser = role;
-            // Save session - refresh par logout nahi hoga
             sessionStorage.setItem('currentUser', currentUser);
             
             if(role === 'chairman') {
@@ -982,7 +985,6 @@
     function logout() {
         currentUser = null;
         currentCouncil = null;
-        // Clear session storage on logout
         sessionStorage.removeItem('currentUser');
         sessionStorage.removeItem('currentCouncil');
         document.getElementById('loginPage').style.display = 'flex';
@@ -1014,7 +1016,6 @@
     document.getElementById('shareBtn').onclick = shareReport;
     document.getElementById('councilShareBtn').onclick = shareReport;
     
-    // Filter modal events
     document.getElementById('openFilterBtn').onclick = openFilterModal;
     document.getElementById('closeFilterBtn').onclick = closeFilterModal;
     document.getElementById('applyFilterBtn').onclick = applyDateFilter;
@@ -1035,7 +1036,7 @@
     
     document.getElementById('password').addEventListener('keypress', (e) => { if(e.key === 'Enter') login(); });
     
-    // ========== CHECK SAVED SESSION ON LOAD ==========
+    // ========== INITIALIZE ==========
     if (savedUser) {
         if (savedUser === 'chairman') {
             document.getElementById('loginPage').style.display = 'none';
@@ -1056,7 +1057,7 @@
     }
     
     setupRealtimeListeners();
-    console.log("Firebase Live Sync Active! All features working!");
+    console.log("Firebase Live Sync Active - Transfer function fixed!");
 </script>
 </body>
 </html>
