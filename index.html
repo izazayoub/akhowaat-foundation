@@ -260,6 +260,7 @@
             color: #999;
         }
         
+        /* Filter Modal */
         .filter-modal {
             display: none;
             position: fixed;
@@ -514,10 +515,11 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     
-    // Session persistence
+    // ========== STATE ==========
     let currentUser = null;
     let currentCouncil = null;
     let filteredHistory = [];
+    let isTransferring = false; // ← FIX: double-click rokne ke liye
     
     const savedUser = sessionStorage.getItem('currentUser');
     const savedCouncil = sessionStorage.getItem('currentCouncil');
@@ -528,7 +530,12 @@
     
     let displayNames = { chairman: 'Chairman', council1: 'Council 1', council2: 'Council 2', council3: 'Council 3', council4: 'Council 4' };
     let chairmanData = { balance: 50000, history: [{ date: new Date().toLocaleString(), type: 'Initial', amount: 50000, desc: 'Starting balance' }] };
-    let councilsData = { council1: { balance: 0, history: [] }, council2: { balance: 0, history: [] }, council3: { balance: 0, history: [] }, council4: { balance: 0, history: [] } };
+    let councilsData = {
+        council1: { balance: 0, history: [] },
+        council2: { balance: 0, history: [] },
+        council3: { balance: 0, history: [] },
+        council4: { balance: 0, history: [] }
+    };
     let credentials = { chairman: 'chairman123', council1: 'council123', council2: 'council123', council3: 'council123', council4: 'council123' };
     
     // ========== FIREBASE FUNCTIONS ==========
@@ -539,8 +546,17 @@
             else database.ref('chairmanData').set(chairmanData);
             
             const cns = await database.ref('councilsData').get();
-            if(cns.exists()) councilsData = cns.val();
-            else database.ref('councilsData').set(councilsData);
+            if(cns.exists()) {
+                // FIX: Har council ensure karo ke exist karti ho
+                let loaded = cns.val();
+                ['council1','council2','council3','council4'].forEach(c => {
+                    if(!loaded[c]) loaded[c] = { balance: 0, history: [] };
+                    if(!loaded[c].history) loaded[c].history = [];
+                });
+                councilsData = loaded;
+            } else {
+                database.ref('councilsData').set(councilsData);
+            }
             
             const ns = await database.ref('displayNames').get();
             if(ns.exists()) displayNames = ns.val();
@@ -558,6 +574,7 @@
         } catch(e) {
             document.getElementById('syncStatus').innerHTML = '⚠️ Offline';
             document.getElementById('syncStatus').style.background = '#ef4444';
+            console.error('Firebase load error:', e);
         }
     }
     
@@ -567,8 +584,25 @@
     async function saveCredentials() { await database.ref('credentials').set(credentials); }
     
     function setupRealtimeListeners() {
-        database.ref('chairmanData').on('value', (s) => { if(s.exists()) { chairmanData = s.val(); if(currentUser === 'chairman') updateChairmanUI(); } });
-        database.ref('councilsData').on('value', (s) => { if(s.exists()) { councilsData = s.val(); if(currentUser === 'chairman') updateChairmanUI(); else if(currentCouncil) updateCouncilUI(); } });
+        database.ref('chairmanData').on('value', (s) => {
+            if(s.exists()) {
+                chairmanData = s.val();
+                if(!chairmanData.history) chairmanData.history = [];
+                if(currentUser === 'chairman') updateChairmanUI();
+            }
+        });
+        database.ref('councilsData').on('value', (s) => {
+            if(s.exists()) {
+                let loaded = s.val();
+                ['council1','council2','council3','council4'].forEach(c => {
+                    if(!loaded[c]) loaded[c] = { balance: 0, history: [] };
+                    if(!loaded[c].history) loaded[c].history = [];
+                });
+                councilsData = loaded;
+                if(currentUser === 'chairman') updateChairmanUI();
+                else if(currentCouncil) updateCouncilUI();
+            }
+        });
     }
     
     function showAlert(msg, type) {
@@ -579,6 +613,7 @@
         setTimeout(() => d.style.display = 'none', 3000);
     }
     
+    // ========== DATE FILTER ==========
     function openFilterModal() { document.getElementById('filterModal').style.display = 'flex'; }
     function closeFilterModal() { document.getElementById('filterModal').style.display = 'none'; }
     
@@ -593,17 +628,15 @@
             return;
         }
         
-        filteredHistory = chairmanData.history.filter(item => {
+        filteredHistory = (chairmanData.history || []).filter(item => {
             let itemDate = new Date(item.date);
             let match = true;
             if (startDate) {
-                let sDate = new Date(startDate);
-                sDate.setHours(0, 0, 0, 0);
+                let sDate = new Date(startDate); sDate.setHours(0,0,0,0);
                 if (itemDate < sDate) match = false;
             }
             if (endDate && match) {
-                let eDate = new Date(endDate);
-                eDate.setHours(23, 59, 59, 999);
+                let eDate = new Date(endDate); eDate.setHours(23,59,59,999);
                 if (itemDate > eDate) match = false;
             }
             return match;
@@ -623,10 +656,11 @@
         closeFilterModal();
     }
     
+    // ========== UI UPDATE ==========
     function updateChairmanUI() {
         document.getElementById('chairmanBalance').innerHTML = 'PKR ' + (chairmanData.balance || 0).toLocaleString();
         let td=0, tt=0, te=0;
-        for(let h of chairmanData.history) {
+        for(let h of (chairmanData.history || [])) {
             if(h.type === 'Deposit') td += h.amount;
             else if(h.type === 'Transfer') tt += Math.abs(h.amount);
             else if(h.type === 'Expense') te += Math.abs(h.amount);
@@ -638,11 +672,11 @@
     }
     
     function displayChairmanHistory() {
-        let historyToShow = filteredHistory.length > 0 ? filteredHistory : chairmanData.history;
+        let historyToShow = filteredHistory.length > 0 ? filteredHistory : (chairmanData.history || []);
         let html = '';
         for(let h of historyToShow.slice(0,50)) {
             let isPos = h.amount > 0;
-            let icon = isPos ? (h.type === 'Deposit' ? '💰' : '🔄') : '📝';
+            let icon = isPos ? (h.type === 'Deposit' ? '💰' : '🔄') : (h.type === 'Transfer' ? '🔄' : '📝');
             let sign = isPos ? '+' : '-';
             html += `<div class="transaction-item">
                 <div class="transaction-left">
@@ -666,21 +700,20 @@
         let councilDisplay = currentCouncil ? currentCouncil.replace('council', 'Council ') : 'Council';
         document.getElementById('councilName').innerHTML = displayNames[currentCouncil] || councilDisplay;
         let tr=0, tf=0;
-        for(let h of data.history) {
-            if(h.type === 'Received' || h.type === 'Distribution') {
-                tr += h.amount;
-                tf += (h.families || 0);
-            }
+        for(let h of (data.history || [])) {
+            if(h.type === 'Received') tr += (h.amount || 0);
+            if(h.type === 'Distribution') tf += (h.families || 0);
         }
         document.getElementById('totalReceived').innerHTML = 'PKR ' + tr.toLocaleString();
         document.getElementById('totalFamilies').innerHTML = tf;
-        document.getElementById('totalDistributions').innerHTML = data.history.length;
+        document.getElementById('totalDistributions').innerHTML = (data.history || []).length;
         
         let html = '';
-        for(let h of data.history.slice(0,50)) {
+        for(let h of (data.history || []).slice(0,50)) {
+            let isPos = h.type === 'Received';
             html += `<div class="transaction-item">
                 <div class="transaction-left">
-                    <div class="transaction-icon">🤝</div>
+                    <div class="transaction-icon">${isPos ? '💰' : '🤝'}</div>
                     <div>
                         <div class="transaction-type">${h.type}</div>
                         <div class="transaction-date">${h.date}</div>
@@ -688,30 +721,22 @@
                         ${h.desc ? `<div style="font-size:10px;color:#888;">${h.desc}</div>` : ''}
                     </div>
                 </div>
-                <div class="transaction-amount amount-negative">-PKR ${h.amount.toLocaleString()}</div>
+                <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">${isPos ? '+' : '-'}PKR ${(h.amount || 0).toLocaleString()}</div>
             </div>`;
         }
-        if(data.history.length === 0) html = '<div class="empty-state">No distributions yet</div>';
+        if((data.history || []).length === 0) html = '<div class="empty-state">No distributions yet</div>';
         document.getElementById('councilHistory').innerHTML = html;
     }
     
-    // ========== DEPOSIT FUNCTION ==========
+    // ========== DEPOSIT ==========
     async function deposit() {
         let amount = parseFloat(document.getElementById('depositAmount').value);
         let desc = document.getElementById('depositDesc').value || 'Manual deposit';
-        
-        if(isNaN(amount) || amount <= 0) {
-            showAlert('Enter valid amount', 'danger');
-            return;
-        }
+        if(isNaN(amount) || amount <= 0) { showAlert('Enter valid amount', 'danger'); return; }
         
         chairmanData.balance = (chairmanData.balance || 0) + amount;
-        chairmanData.history.unshift({
-            date: new Date().toLocaleString(),
-            type: 'Deposit',
-            amount: amount,
-            desc: desc
-        });
+        if(!chairmanData.history) chairmanData.history = [];
+        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Deposit', amount: amount, desc: desc });
         
         await saveChairman();
         updateChairmanUI();
@@ -721,93 +746,104 @@
         showAlert('PKR ' + amount.toLocaleString() + ' deposited!', 'success');
     }
     
-    // ========== TRANSFER FUNCTION - FULLY FIXED ==========
+    // ========== TRANSFER - FIXED ==========
     async function transfer() {
-        // Get values from modal
+        // FIX 1: Double click protection
+        if(isTransferring) return;
+        
         let council = document.getElementById('transferCouncil').value;
         let amount = parseFloat(document.getElementById('transferAmount').value);
         let desc = document.getElementById('transferDesc').value || 'Fund transfer';
         
-        // Validation
-        if(isNaN(amount) || amount <= 0) {
-            showAlert('Please enter a valid amount', 'danger');
-            return;
-        }
-        
+        if(isNaN(amount) || amount <= 0) { showAlert('Enter valid amount', 'danger'); return; }
         if(amount > (chairmanData.balance || 0)) {
-            showAlert('Insufficient balance! Current balance: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
+            showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
             return;
         }
         
-        // 1. Deduct from chairman
-        chairmanData.balance = (chairmanData.balance || 0) - amount;
-        chairmanData.history.unshift({
-            date: new Date().toLocaleString(),
-            type: 'Transfer to ' + council,
-            amount: -amount,
-            desc: desc
-        });
+        isTransferring = true;
+        document.getElementById('transferBtn').innerHTML = 'Processing...';
+        document.getElementById('transferBtn').disabled = true;
         
-        // 2. Add to council
-        if (!councilsData[council]) {
-            councilsData[council] = { balance: 0, history: [] };
+        try {
+            // FIX 2: Firebase se latest data pehle lo taake stale data na ho
+            const latestChairman = await database.ref('chairmanData').get();
+            if(latestChairman.exists()) chairmanData = latestChairman.val();
+            if(!chairmanData.history) chairmanData.history = [];
+            
+            const latestCouncils = await database.ref('councilsData').get();
+            if(latestCouncils.exists()) {
+                councilsData = latestCouncils.val();
+            }
+            
+            // FIX 3: Council ensure karo ke properly exist kare
+            if(!councilsData[council]) councilsData[council] = { balance: 0, history: [] };
+            if(!councilsData[council].history) councilsData[council].history = [];
+            if(typeof councilsData[council].balance !== 'number') councilsData[council].balance = 0;
+            
+            // Re-check balance after fresh fetch
+            if(amount > (chairmanData.balance || 0)) {
+                showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
+                return;
+            }
+            
+            let now = new Date().toLocaleString();
+            
+            // Chairman se deduct
+            chairmanData.balance = (chairmanData.balance || 0) - amount;
+            chairmanData.history.unshift({
+                date: now,
+                type: 'Transfer',
+                amount: -amount,
+                desc: 'To ' + displayNames[council] + ': ' + desc
+            });
+            
+            // Council mein add
+            councilsData[council].balance = (councilsData[council].balance || 0) + amount;
+            councilsData[council].history.unshift({
+                date: now,
+                type: 'Received',
+                amount: amount,
+                desc: 'Received from Chairman: ' + desc
+            });
+            
+            // FIX 4: Dono ek saath save karo Firebase transaction use karke
+            await database.ref().update({
+                'chairmanData': chairmanData,
+                'councilsData': councilsData
+            });
+            
+            updateChairmanUI();
+            if(currentCouncil === council) updateCouncilUI();
+            
+            closeModal('transferModal');
+            document.getElementById('transferAmount').value = '';
+            document.getElementById('transferDesc').value = '';
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' transferred to ' + displayNames[council] + '!', 'success');
+            
+        } catch(err) {
+            console.error('Transfer error:', err);
+            showAlert('Transfer failed! Please try again.', 'danger');
+        } finally {
+            isTransferring = false;
+            document.getElementById('transferBtn').innerHTML = 'Transfer';
+            document.getElementById('transferBtn').disabled = false;
         }
-        councilsData[council].balance = (councilsData[council].balance || 0) + amount;
-        councilsData[council].history.unshift({
-            date: new Date().toLocaleString(),
-            type: 'Received from Chairman',
-            amount: amount,
-            desc: desc
-        });
-        
-        // 3. Save to Firebase
-        await saveChairman();
-        await saveCouncils();
-        
-        // 4. Update UI
-        updateChairmanUI();
-        if(currentCouncil === council) {
-            updateCouncilUI();
-        }
-        
-        // 5. Close modal and clear fields
-        closeModal('transferModal');
-        document.getElementById('transferAmount').value = '';
-        document.getElementById('transferDesc').value = '';
-        
-        // 6. Show success message
-        showAlert('PKR ' + amount.toLocaleString() + ' successfully transferred to ' + council + '!', 'success');
-        
-        // 7. Log for debugging
-        console.log('Transfer completed:', { council, amount, desc, newChairmanBalance: chairmanData.balance, newCouncilBalance: councilsData[council].balance });
     }
     
-    // ========== EXPENSE FUNCTION ==========
+    // ========== EXPENSE ==========
     async function addExpense() {
         let category = document.getElementById('expenseCategory').value;
         let amount = parseFloat(document.getElementById('expenseAmount').value);
         let desc = document.getElementById('expenseDesc').value || '';
         
-        if(!category) {
-            showAlert('Enter category', 'danger');
-            return;
-        }
-        if(isNaN(amount) || amount <= 0) {
-            showAlert('Enter valid amount', 'danger');
-            return;
-        }
-        if(amount > (chairmanData.balance || 0)) {
-            showAlert('Insufficient balance!', 'danger');
-            return;
-        }
+        if(!category) { showAlert('Enter category', 'danger'); return; }
+        if(isNaN(amount) || amount <= 0) { showAlert('Enter valid amount', 'danger'); return; }
+        if(amount > (chairmanData.balance || 0)) { showAlert('Insufficient balance!', 'danger'); return; }
         
+        if(!chairmanData.history) chairmanData.history = [];
         chairmanData.balance = (chairmanData.balance || 0) - amount;
-        chairmanData.history.unshift({
-            date: new Date().toLocaleString(),
-            type: 'Expense',
-            amount: -amount,
-            desc: category + ': ' + desc
-        });
+        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Expense', amount: -amount, desc: category + ': ' + desc });
         
         await saveChairman();
         updateChairmanUI();
@@ -818,27 +854,19 @@
         showAlert('Expense added: PKR ' + amount.toLocaleString(), 'success');
     }
     
-    // ========== DISTRIBUTE FUNCTION ==========
+    // ========== DISTRIBUTE ==========
     async function distribute() {
         let families = parseInt(document.getElementById('familiesCount').value);
         let perFamily = parseFloat(document.getElementById('amountPerFamily').value);
         let desc = document.getElementById('distributionDesc').value || 'Aid distribution';
         let total = families * perFamily;
         
-        if(isNaN(families) || families <= 0) {
-            showAlert('Enter valid number of families', 'danger');
-            return;
-        }
-        if(isNaN(perFamily) || perFamily <= 0) {
-            showAlert('Enter valid amount per family', 'danger');
-            return;
-        }
-        if(total > (councilsData[currentCouncil]?.balance || 0)) {
-            showAlert('Insufficient balance in council wallet!', 'danger');
-            return;
-        }
+        if(isNaN(families) || families <= 0) { showAlert('Enter valid number of families', 'danger'); return; }
+        if(isNaN(perFamily) || perFamily <= 0) { showAlert('Enter valid amount per family', 'danger'); return; }
+        if(total > (councilsData[currentCouncil]?.balance || 0)) { showAlert('Insufficient balance in council wallet!', 'danger'); return; }
         
-        if (!councilsData[currentCouncil]) councilsData[currentCouncil] = { balance: 0, history: [] };
+        if(!councilsData[currentCouncil]) councilsData[currentCouncil] = { balance: 0, history: [] };
+        if(!councilsData[currentCouncil].history) councilsData[currentCouncil].history = [];
         councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - total;
         councilsData[currentCouncil].history.unshift({
             date: new Date().toLocaleString(),
@@ -857,7 +885,7 @@
         showAlert('PKR ' + total.toLocaleString() + ' distributed to ' + families + ' families!', 'success');
     }
     
-    // ========== SETTINGS FUNCTIONS ==========
+    // ========== SETTINGS ==========
     function openChairmanSettings() { openModal('chairmanSettingsModal'); }
     function openCouncilSettings() { openModal('councilSettingsModal'); }
     
@@ -867,7 +895,7 @@
             credentials.chairman = newPass;
             await saveCredentials();
             closeModal('changePasswordModal');
-            showAlert('Password changed successfully!', 'success');
+            showAlert('Password changed!', 'success');
         };
     }
     
@@ -877,7 +905,7 @@
             credentials[currentCouncil] = newPass;
             await saveCredentials();
             closeModal('changePasswordModal');
-            showAlert('Password changed successfully!', 'success');
+            showAlert('Password changed!', 'success');
         };
     }
     
@@ -904,7 +932,7 @@
             chairmanData = { balance: 0, history: [] };
             await saveChairman();
             updateChairmanUI();
-            showAlert('Wallet reset!', 'warning');
+            showAlert('Wallet reset!', 'success');
         }
     }
     
@@ -913,23 +941,15 @@
             councilsData[currentCouncil] = { balance: 0, history: [] };
             await saveCouncils();
             updateCouncilUI();
-            showAlert('Wallet reset!', 'warning');
+            showAlert('Wallet reset!', 'success');
         }
     }
     
     function savePassword() {
         let newPass = document.getElementById('newPassword').value;
         let confirmPass = document.getElementById('confirmPassword').value;
-        
-        if(!newPass) {
-            showAlert('Enter a password', 'danger');
-            return;
-        }
-        if(newPass !== confirmPass) {
-            showAlert('Passwords do not match', 'danger');
-            return;
-        }
-        
+        if(!newPass) { showAlert('Enter a password', 'danger'); return; }
+        if(newPass !== confirmPass) { showAlert('Passwords do not match', 'danger'); return; }
         if(window.passwordCallback) {
             window.passwordCallback(newPass);
             window.passwordCallback = null;
@@ -942,8 +962,8 @@
         let msg = '';
         if(currentUser === 'chairman') {
             msg = 'Akhowaat Foundation - Chairman Report\n💰 Balance: PKR ' + (chairmanData.balance || 0).toLocaleString();
-            msg += '\n📊 Total Deposits: ' + chairmanData.history.filter(h => h.type === 'Deposit').reduce((a,b) => a + (b.amount || 0), 0).toLocaleString();
-            msg += '\n📤 Total Transfers: ' + chairmanData.history.filter(h => h.type === 'Transfer').reduce((a,b) => a + (b.amount || 0), 0).toLocaleString();
+            msg += '\n📊 Total Deposits: PKR ' + (chairmanData.history || []).filter(h => h.type === 'Deposit').reduce((a,b) => a + (b.amount || 0), 0).toLocaleString();
+            msg += '\n📤 Total Transfers: PKR ' + (chairmanData.history || []).filter(h => h.type === 'Transfer').reduce((a,b) => a + Math.abs(b.amount || 0), 0).toLocaleString();
         } else {
             msg = 'Akhowaat Foundation - ' + displayNames[currentCouncil] + '\n💰 Balance: PKR ' + (councilsData[currentCouncil]?.balance || 0).toLocaleString();
         }
@@ -953,11 +973,17 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
-    // ========== LOGIN/LOGOUT ==========
+    // ========== LOGIN / LOGOUT ==========
     async function login() {
         let role = document.getElementById('roleSelect').value;
         let pwd = document.getElementById('password').value;
         let err = document.getElementById('loginError');
+        
+        // Fresh credentials load karo login par
+        try {
+            const crs = await database.ref('credentials').get();
+            if(crs.exists()) credentials = crs.val();
+        } catch(e) {}
         
         if(credentials[role] === pwd) {
             currentUser = role;
@@ -1036,28 +1062,20 @@
     
     document.getElementById('password').addEventListener('keypress', (e) => { if(e.key === 'Enter') login(); });
     
-    // ========== INITIALIZE ==========
+    // ========== INIT ==========
     if (savedUser) {
         if (savedUser === 'chairman') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('chairmanDashboard').style.display = 'block';
-            currentUser = savedUser;
-            loadFromFirebase();
         } else if (savedCouncil) {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('councilDashboard').style.display = 'block';
-            currentUser = savedUser;
-            currentCouncil = savedCouncil;
-            loadFromFirebase();
-        } else {
-            loadFromFirebase();
         }
-    } else {
-        loadFromFirebase();
     }
     
+    loadFromFirebase();
     setupRealtimeListeners();
-    console.log("Firebase Live Sync Active - Transfer function fixed!");
+    console.log("Firebase Live Sync Active - Transfer Bug Fixed!");
 </script>
 </body>
 </html>
