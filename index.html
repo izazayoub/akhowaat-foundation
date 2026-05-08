@@ -28,12 +28,15 @@
             max-width: 400px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .login-card h1 {
+        .login-card h2 {
             text-align: center;
             margin-bottom: 30px;
             color: #333;
-            font-size: 28px;
+            font-size: 20px;
+            font-weight: 800;
             letter-spacing: 1px;
+            text-transform: uppercase;
+            line-height: 1.3;
             white-space: nowrap;
         }
         .login-card input, .login-card select {
@@ -57,9 +60,29 @@
             display: flex; justify-content: space-between; align-items: center;
         }
         .council-navbar { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-        .navbar h3 { font-size: 18px; }
-        .navbar-right { display: flex; align-items: center; gap: 15px; }
-        .logout-btn { background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 8px; cursor: pointer; }
+        .navbar h3 { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+        .navbar-right { display: flex; align-items: center; gap: 10px; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .logout-icon { font-size: 16px; }
+        .sync-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         .balance-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -84,7 +107,7 @@
         .action-btn:active { transform: scale(0.98); }
         .action-icon { font-size: 32px; margin-bottom: 8px; }
         .action-text { font-size: 14px; font-weight: 500; color: #555; }
-        .history-card { background: white; border-radius: 15px; overflow: hidden; }
+        .history-card { background: white; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
         .history-header {
             padding: 15px; border-bottom: 1px solid #eee;
             display: flex; justify-content: space-between; align-items: center;
@@ -95,11 +118,22 @@
             background: #f0f0f0; border: none; font-size: 14px;
             cursor: pointer; padding: 8px 12px; border-radius: 8px; margin-left: 5px;
         }
-        .share-btn, .print-btn {
+        .share-btn {
             background: #f0f0f0; border: none; font-size: 14px;
             cursor: pointer; padding: 8px 12px; border-radius: 8px;
         }
-        .print-btn { margin-left: 5px; }
+        .print-btn {
+            background: #f0f0f0; border: none; font-size: 14px;
+            cursor: pointer; padding: 8px 12px; border-radius: 8px; margin-left: 5px;
+        }
+        .council-history-block { border-bottom: 2px solid #eee; margin-bottom: 5px; }
+        .council-history-header {
+            padding: 12px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f8f9fa;
+        }
+        .council-history-header h5 { font-size: 14px; color: #444; font-weight: 700; }
+        .council-history-btns { display: flex; gap: 6px; align-items: center; }
         .history-list { max-height: 400px; overflow-y: auto; }
         .transaction-item {
             padding: 12px 15px; border-bottom: 1px solid #f0f0f0;
@@ -130,6 +164,8 @@
             transition: all 0.2s;
         }
         .council-tab.active { background: #667eea; color: white; }
+        .council-tab-content { display: none; }
+        .council-tab-content.active { display: block; }
 
         .filter-modal {
             display: none; position: fixed; top: 0; left: 0;
@@ -182,7 +218,10 @@
         @media (max-width: 500px) {
             .balance-amount { font-size: 36px; }
             .action-icon { font-size: 28px; }
-            .login-card h1 { font-size: 22px; white-space: normal; text-align: center; }
+            .login-card h2 { font-size: 16px; }
+        }
+        @media (max-width: 380px) {
+            .login-card h2 { font-size: 14px; letter-spacing: 0.5px; }
         }
     </style>
 </head>
@@ -193,63 +232,113 @@
 <!-- LOGIN PAGE -->
 <div id="loginPage" class="login-container">
     <div class="login-card">
-        <h1>🤲 AKHOWAAT WELFARE FOUNDATION</h1>
+        <h2>🤲 AKHOWAAT WELFARE FOUNDATION</h2>
         <div id="loginError" class="error-msg"></div>
         <select id="roleSelect">
-            <option value="chairman">🏛️ CHAIRMAN</option>
-            <option value="council1">🌾 COUNCIL 1</option>
-            <option value="council2">🌿 COUNCIL 2</option>
-            <option value="council3">🍃 COUNCIL 3</option>
-            <option value="council4">🌻 COUNCIL 4</option>
+            <option value="chairman">🏛️ Chairman</option>
+            <option value="council1">🌾 Council 1</option>
+            <option value="council2">🌿 Council 2</option>
+            <option value="council3">🍃 Council 3</option>
+            <option value="council4">🌻 Council 4</option>
         </select>
         <input type="password" id="password" placeholder="Password">
-        <button id="loginBtn">LOGIN</button>
+        <button id="loginBtn">🔐 Login</button>
     </div>
 </div>
 
 <!-- CHAIRMAN DASHBOARD -->
 <div id="chairmanDashboard" class="dashboard">
     <div class="navbar">
-        <h3>🤲 AKHOWAAT - CHAIRMAN</h3>
+        <h3>🤲 AKHOWAAT - Chairman</h3>
         <div class="navbar-right">
-            <div class="logout-btn" id="chairmanLogout">🚪 LOGOUT</div>
+            <div class="sync-badge" id="navSyncStatusChairman">🔄 Live Sync</div>
+            <div class="logout-btn" id="chairmanLogout"><span class="logout-icon">🚪</span> Logout</div>
         </div>
     </div>
     <div class="container">
         <div class="balance-card">
-            <div>💰 MAIN WALLET BALANCE</div>
+            <div>💰 Main Wallet Balance</div>
             <div class="balance-amount" id="chairmanBalance">PKR 0</div>
         </div>
         <div class="stats-row">
-            <div class="stat-card"><div class="value" id="totalDeposit">PKR 0</div><div class="label">TOTAL DEPOSITS</div></div>
-            <div class="stat-card"><div class="value" id="totalTransfer">PKR 0</div><div class="label">TOTAL TRANSFERS</div></div>
-            <div class="stat-card"><div class="value" id="totalExpense">PKR 0</div><div class="label">TOTAL EXPENSES</div></div>
+            <div class="stat-card"><div class="value" id="totalDeposit">PKR 0</div><div class="label">Total Deposits</div></div>
+            <div class="stat-card"><div class="value" id="totalTransfer">PKR 0</div><div class="label">Total Transfers</div></div>
+            <div class="stat-card"><div class="value" id="totalExpense">PKR 0</div><div class="label">Total Expenses</div></div>
         </div>
         <div class="action-buttons">
-            <div class="action-btn" id="openDeposit"><div class="action-icon">💰</div><div class="action-text">DEPOSIT</div></div>
-            <div class="action-btn" id="openTransfer"><div class="action-icon">🔄</div><div class="action-text">TRANSFER</div></div>
-            <div class="action-btn" id="openExpense"><div class="action-icon">📝</div><div class="action-text">EXPENSE</div></div>
-            <div class="action-btn" id="openChairmanSettings"><div class="action-icon">⚙️</div><div class="action-text">SETTINGS</div></div>
+            <div class="action-btn" id="openDeposit"><div class="action-icon">💰</div><div class="action-text">Deposit</div></div>
+            <div class="action-btn" id="openTransfer"><div class="action-icon">🔄</div><div class="action-text">Transfer</div></div>
+            <div class="action-btn" id="openExpense"><div class="action-icon">📝</div><div class="action-text">Expense</div></div>
+            <div class="action-btn" id="openChairmanSettings"><div class="action-icon">⚙️</div><div class="action-text">Settings</div></div>
         </div>
 
         <!-- Chairman: Own History + Council Records Tabs -->
         <div class="history-card">
             <div class="history-header">
-                <h4>📜 RECORDS</h4>
+                <h4>📜 Records</h4>
                 <div>
-                    <button class="filter-icon-btn" id="openFilterBtn">📅 FILTER</button>
+                    <button class="filter-icon-btn" id="openFilterBtn">📅 Filter</button>
                 </div>
             </div>
             <div style="padding: 10px 15px 0;">
                 <div class="council-tabs">
-                    <div class="council-tab active" onclick="switchTab('own')">🏠 MY TRANSACTIONS</div>
-                    <div class="council-tab" onclick="switchTab('council1')" id="tab-council1">🌾 COUNCIL 1</div>
-                    <div class="council-tab" onclick="switchTab('council2')" id="tab-council2">🌿 COUNCIL 2</div>
-                    <div class="council-tab" onclick="switchTab('council3')" id="tab-council3">🍃 COUNCIL 3</div>
-                    <div class="council-tab" onclick="switchTab('council4')" id="tab-council4">🌻 COUNCIL 4</div>
+                    <div class="council-tab active" onclick="switchTab('own')">My Transactions</div>
+                    <div class="council-tab" onclick="switchTab('council1')" id="tab-council1">Council 1</div>
+                    <div class="council-tab" onclick="switchTab('council2')" id="tab-council2">Council 2</div>
+                    <div class="council-tab" onclick="switchTab('council3')" id="tab-council3">Council 3</div>
+                    <div class="council-tab" onclick="switchTab('council4')" id="tab-council4">Council 4</div>
                 </div>
             </div>
-            <div class="history-list" id="chairmanHistory"></div>
+
+            <!-- Own transactions list -->
+            <div id="ownHistorySection">
+                <div class="history-list" id="chairmanHistory"></div>
+            </div>
+
+            <!-- Per-council blocks with share+print per council -->
+            <div id="councilHistorySection" style="display:none;">
+                <div class="council-history-block" id="block-council1">
+                    <div class="council-history-header">
+                        <h5 id="blockTitle-council1">🌾 Council 1</h5>
+                        <div class="council-history-btns">
+                            <button class="share-btn" onclick="shareCouncilReport('council1')">📱 Share</button>
+                            <button class="print-btn" onclick="printCouncilHistory('council1')">🖨️ Print</button>
+                        </div>
+                    </div>
+                    <div class="history-list" id="councilHistoryList-council1"></div>
+                </div>
+                <div class="council-history-block" id="block-council2">
+                    <div class="council-history-header">
+                        <h5 id="blockTitle-council2">🌿 Council 2</h5>
+                        <div class="council-history-btns">
+                            <button class="share-btn" onclick="shareCouncilReport('council2')">📱 Share</button>
+                            <button class="print-btn" onclick="printCouncilHistory('council2')">🖨️ Print</button>
+                        </div>
+                    </div>
+                    <div class="history-list" id="councilHistoryList-council2"></div>
+                </div>
+                <div class="council-history-block" id="block-council3">
+                    <div class="council-history-header">
+                        <h5 id="blockTitle-council3">🍃 Council 3</h5>
+                        <div class="council-history-btns">
+                            <button class="share-btn" onclick="shareCouncilReport('council3')">📱 Share</button>
+                            <button class="print-btn" onclick="printCouncilHistory('council3')">🖨️ Print</button>
+                        </div>
+                    </div>
+                    <div class="history-list" id="councilHistoryList-council3"></div>
+                </div>
+                <div class="council-history-block" id="block-council4">
+                    <div class="council-history-header">
+                        <h5 id="blockTitle-council4">🌻 Council 4</h5>
+                        <div class="council-history-btns">
+                            <button class="share-btn" onclick="shareCouncilReport('council4')">📱 Share</button>
+                            <button class="print-btn" onclick="printCouncilHistory('council4')">🖨️ Print</button>
+                        </div>
+                    </div>
+                    <div class="history-list" id="councilHistoryList-council4"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -257,32 +346,33 @@
 <!-- COUNCIL DASHBOARD -->
 <div id="councilDashboard" class="dashboard">
     <div class="navbar council-navbar">
-        <h3>🤝 AKHOWAAT - <span id="councilName">COUNCIL</span></h3>
+        <h3>🤝 AKHOWAAT - <span id="councilName">Council</span></h3>
         <div class="navbar-right">
-            <div class="logout-btn" id="councilLogout">🚪 LOGOUT</div>
+            <div class="sync-badge" id="navSyncStatusCouncil">🔄 Live Sync</div>
+            <div class="logout-btn" id="councilLogout"><span class="logout-icon">🚪</span> Logout</div>
         </div>
     </div>
     <div class="container">
         <div class="balance-card council-balance">
-            <div>🏷️ COUNCIL WALLET BALANCE</div>
+            <div>🏷️ Council Wallet Balance</div>
             <div class="balance-amount" id="councilBalance">PKR 0</div>
         </div>
         <div class="stats-row">
-            <div class="stat-card"><div class="value" id="totalReceived">PKR 0</div><div class="label">TOTAL RECEIVED</div></div>
-            <div class="stat-card"><div class="value" id="totalPersons">0</div><div class="label">PERSONS HELPED</div></div>
-            <div class="stat-card"><div class="value" id="totalDistributions">0</div><div class="label">DISTRIBUTIONS</div></div>
+            <div class="stat-card"><div class="value" id="totalReceived">PKR 0</div><div class="label">Total Received</div></div>
+            <div class="stat-card"><div class="value" id="totalPersons">0</div><div class="label">Persons Helped</div></div>
+            <div class="stat-card"><div class="value" id="totalDistributions">0</div><div class="label">Distributions</div></div>
         </div>
         <div class="action-buttons">
-            <div class="action-btn" id="openDistribution"><div class="action-icon">🤝</div><div class="action-text">DISTRIBUTE</div></div>
-            <div class="action-btn" id="openCouncilSettings"><div class="action-icon">⚙️</div><div class="action-text">SETTINGS</div></div>
+            <div class="action-btn" id="openDistribution"><div class="action-icon">🤝</div><div class="action-text">Distribute</div></div>
+            <div class="action-btn" id="openCouncilSettings"><div class="action-icon">⚙️</div><div class="action-text">Settings</div></div>
         </div>
         <div class="history-card">
             <div class="history-header">
-                <h4>📋 DISTRIBUTION RECORDS</h4>
+                <h4>📋 Distribution Records</h4>
                 <div>
-                    <button class="filter-icon-btn" id="councilOpenFilterBtn">📅 FILTER</button>
-                    <button class="share-btn" id="councilShareBtn">📱 SHARE</button>
-                    <button class="print-btn" id="councilPrintBtn">🖨️ PRINT</button>
+                    <button class="filter-icon-btn" id="councilOpenFilterBtn">📅 Filter</button>
+                    <button class="share-btn" id="councilShareBtn">📱 Share</button>
+                    <button class="print-btn" id="councilPrintBtn">🖨️ Print</button>
                 </div>
             </div>
             <div class="history-list" id="councilHistory"></div>
@@ -290,113 +380,113 @@
     </div>
 </div>
 
-<!-- Council Filter Modal -->
-<div id="councilFilterModal" class="filter-modal">
+<!-- Filter Modal (Chairman) -->
+<div id="filterModal" class="filter-modal">
     <div class="filter-modal-content">
-        <h3>📅 FILTER DISTRIBUTIONS</h3>
-        <input type="date" id="councilFilterStartDate">
-        <input type="date" id="councilFilterEndDate">
+        <h3>📅 Filter Transactions</h3>
+        <input type="date" id="filterStartDate">
+        <input type="date" id="filterEndDate">
         <div class="modal-buttons">
-            <button class="btn-primary" id="applyCouncilFilterBtn">APPLY</button>
-            <button class="btn-secondary" id="resetCouncilFilterBtn">RESET</button>
-            <button class="btn-secondary" id="closeCouncilFilterBtn">CLOSE</button>
+            <button class="btn-primary" id="applyFilterBtn">Apply</button>
+            <button class="btn-secondary" id="resetFilterBtn">Reset</button>
+            <button class="btn-secondary" id="closeFilterBtn">Close</button>
         </div>
     </div>
 </div>
 
-<!-- Chairman Filter Modal -->
-<div id="filterModal" class="filter-modal">
+<!-- Filter Modal (Council) -->
+<div id="councilFilterModal" class="filter-modal">
     <div class="filter-modal-content">
-        <h3>📅 FILTER TRANSACTIONS</h3>
-        <input type="date" id="filterStartDate">
-        <input type="date" id="filterEndDate">
+        <h3>📅 Filter Records</h3>
+        <input type="date" id="councilFilterStartDate">
+        <input type="date" id="councilFilterEndDate">
         <div class="modal-buttons">
-            <button class="btn-primary" id="applyFilterBtn">APPLY</button>
-            <button class="btn-secondary" id="resetFilterBtn">RESET</button>
-            <button class="btn-secondary" id="closeFilterBtn">CLOSE</button>
+            <button class="btn-primary" id="councilApplyFilterBtn">Apply</button>
+            <button class="btn-secondary" id="councilResetFilterBtn">Reset</button>
+            <button class="btn-secondary" id="councilCloseFilterBtn">Close</button>
         </div>
     </div>
 </div>
 
 <!-- Deposit Modal -->
 <div id="depositModal" class="modal"><div class="modal-content">
-    <h3>💰 DEPOSIT MONEY</h3>
+    <h3>💰 Deposit Money</h3>
     <input type="number" id="depositAmount" placeholder="Amount (PKR)">
     <input type="text" id="depositDesc" placeholder="Description">
     <div class="modal-buttons">
-        <button class="btn-primary" id="depositBtn">DEPOSIT</button>
-        <button class="btn-secondary" id="closeDeposit">CANCEL</button>
+        <button class="btn-primary" id="depositBtn">Deposit</button>
+        <button class="btn-secondary" id="closeDeposit">Cancel</button>
     </div>
 </div></div>
 
 <!-- Transfer Modal -->
 <div id="transferModal" class="modal"><div class="modal-content">
-    <h3>🔄 TRANSFER TO COUNCIL</h3>
+    <h3>🔄 Transfer to Council</h3>
     <select id="transferCouncil">
-        <option value="council1">COUNCIL 1</option>
-        <option value="council2">COUNCIL 2</option>
-        <option value="council3">COUNCIL 3</option>
-        <option value="council4">COUNCIL 4</option>
+        <option value="council1">Council 1</option>
+        <option value="council2">Council 2</option>
+        <option value="council3">Council 3</option>
+        <option value="council4">Council 4</option>
     </select>
     <input type="number" id="transferAmount" placeholder="Amount (PKR)">
     <input type="text" id="transferDesc" placeholder="Purpose">
     <div class="modal-buttons">
-        <button class="btn-primary" id="transferBtn">TRANSFER</button>
-        <button class="btn-secondary" id="closeTransfer">CANCEL</button>
+        <button class="btn-primary" id="transferBtn">Transfer</button>
+        <button class="btn-secondary" id="closeTransfer">Cancel</button>
     </div>
 </div></div>
 
 <!-- Expense Modal -->
 <div id="expenseModal" class="modal"><div class="modal-content">
-    <h3>📝 ADD EXPENSE</h3>
+    <h3>📝 Add Expense</h3>
     <input type="text" id="expenseCategory" placeholder="Category">
     <input type="number" id="expenseAmount" placeholder="Amount (PKR)">
     <input type="text" id="expenseDesc" placeholder="Details">
     <div class="modal-buttons">
-        <button class="btn-primary" id="expenseBtn">ADD</button>
-        <button class="btn-secondary" id="closeExpense">CANCEL</button>
+        <button class="btn-primary" id="expenseBtn">Add</button>
+        <button class="btn-secondary" id="closeExpense">Cancel</button>
     </div>
 </div></div>
 
 <!-- Distribution Modal -->
 <div id="distributionModal" class="modal"><div class="modal-content">
-    <h3>🤝 DISTRIBUTE AID</h3>
+    <h3>🤝 Distribute Aid</h3>
     <input type="text" id="recipientName" placeholder="Recipient Name (Naam)">
     <input type="tel" id="recipientPhone" placeholder="Phone Number">
     <input type="number" id="distributionAmount" placeholder="Amount (PKR)">
     <input type="text" id="distributionDesc" placeholder="Reason / Wajah">
     <div class="modal-buttons">
-        <button class="btn-primary" id="distributeBtn">DISTRIBUTE</button>
-        <button class="btn-secondary" id="closeDistribution">CANCEL</button>
+        <button class="btn-primary" id="distributeBtn">Distribute</button>
+        <button class="btn-secondary" id="closeDistribution">Cancel</button>
     </div>
 </div></div>
 
 <!-- Chairman Settings Modal -->
 <div id="chairmanSettingsModal" class="modal"><div class="modal-content">
-    <h3>⚙️ CHAIRMAN SETTINGS</h3>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 CHANGE PASSWORD</button></div>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanClearHistoryBtn">🗑️ CLEAR HISTORY</button></div>
-    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="chairmanResetWalletBtn">💣 RESET WALLET</button></div>
-    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettings">CLOSE</button></div>
+    <h3>⚙️ Chairman Settings</h3>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 Change Password</button></div>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanClearHistoryBtn">🗑️ Clear History</button></div>
+    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="chairmanResetWalletBtn">💣 Reset Wallet</button></div>
+    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettings">Close</button></div>
 </div></div>
 
 <!-- Council Settings Modal -->
 <div id="councilSettingsModal" class="modal"><div class="modal-content">
-    <h3>⚙️ COUNCIL SETTINGS</h3>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 CHANGE PASSWORD</button></div>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilClearHistoryBtn">🗑️ CLEAR HISTORY</button></div>
-    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="councilResetWalletBtn">💣 RESET WALLET</button></div>
-    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettings">CLOSE</button></div>
+    <h3>⚙️ Council Settings</h3>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 Change Password</button></div>
+    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilClearHistoryBtn">🗑️ Clear History</button></div>
+    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="councilResetWalletBtn">💣 Reset Wallet</button></div>
+    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettings">Close</button></div>
 </div></div>
 
 <!-- Change Password Modal -->
 <div id="changePasswordModal" class="modal"><div class="modal-content">
-    <h3>🔐 CHANGE PASSWORD</h3>
+    <h3>🔐 Change Password</h3>
     <input type="password" id="newPassword" placeholder="New password">
     <input type="password" id="confirmPassword" placeholder="Confirm password">
     <div class="modal-buttons">
-        <button class="btn-primary" id="savePasswordBtn">SAVE</button>
-        <button class="btn-secondary" id="closePasswordModal">CANCEL</button>
+        <button class="btn-primary" id="savePasswordBtn">Save</button>
+        <button class="btn-secondary" id="closePasswordModal">Cancel</button>
     </div>
 </div></div>
 
@@ -465,14 +555,18 @@
             if (crs.exists()) credentials = crs.val();
             else database.ref('credentials').set(credentials);
 
-            document.getElementById('syncStatus').innerHTML = '✅ LIVE SYNC';
-            document.getElementById('syncStatus').style.background = '#10b981';
+            let syncEl = document.getElementById('syncStatus');
+            syncEl.innerHTML = '✅ Live Sync';
+            syncEl.style.background = '#10b981';
+            document.getElementById('navSyncStatusChairman').innerHTML = '✅ Live Sync';
+            document.getElementById('navSyncStatusCouncil').innerHTML = '✅ Live Sync';
 
             if (currentUser === 'chairman') updateChairmanUI();
             else if (currentCouncil) updateCouncilUI();
         } catch(e) {
-            document.getElementById('syncStatus').innerHTML = '⚠️ OFFLINE';
-            document.getElementById('syncStatus').style.background = '#ef4444';
+            let syncEl = document.getElementById('syncStatus');
+            syncEl.innerHTML = '⚠️ Offline';
+            syncEl.style.background = '#ef4444';
             console.error('Firebase load error:', e);
         }
     }
@@ -509,7 +603,12 @@
     function updateCouncilTabNames() {
         ['council1','council2','council3','council4'].forEach(c => {
             let el = document.getElementById('tab-' + c);
-            if (el) el.textContent = (displayNames[c] || c).toUpperCase();
+            if (el) el.textContent = displayNames[c] || c;
+            let bt = document.getElementById('blockTitle-' + c);
+            if (bt) {
+                let icons = { council1: '🌾', council2: '🌿', council3: '🍃', council4: '🌻' };
+                bt.textContent = (icons[c] || '') + ' ' + (displayNames[c] || c);
+            }
         });
     }
 
@@ -522,57 +621,46 @@
     }
 
     // ========== TAB SWITCH (Chairman view) ==========
-    window.switchTab = function(tab) {
+    function switchTab(tab) {
         activeTab = tab;
         document.querySelectorAll('.council-tab').forEach(t => t.classList.remove('active'));
         let allTabs = document.querySelectorAll('.council-tab');
         allTabs.forEach(t => {
-            let onclickAttr = t.getAttribute('onclick');
-            if (onclickAttr && onclickAttr.includes("'" + tab + "'")) t.classList.add('active');
+            let tabId = t.getAttribute('onclick').replace("switchTab('","").replace("')","");
+            if (tabId === tab) t.classList.add('active');
         });
+        filteredHistory = [];
+
         if (tab === 'own') {
-            filteredHistory = [];
+            document.getElementById('ownHistorySection').style.display = 'block';
+            document.getElementById('councilHistorySection').style.display = 'none';
         } else {
-            councilFilteredHistory = [];
+            document.getElementById('ownHistorySection').style.display = 'none';
+            document.getElementById('councilHistorySection').style.display = 'block';
+            // Show only the selected council block
+            ['council1','council2','council3','council4'].forEach(c => {
+                document.getElementById('block-' + c).style.display = (c === tab) ? 'block' : 'none';
+            });
+            displayCouncilBlock(tab);
         }
-        displayChairmanHistory();
+
+        if (tab === 'own') displayChairmanHistory();
     }
 
-    // ========== COUNCIL FILTER FUNCTIONS ==========
-    function openCouncilFilterModal() { document.getElementById('councilFilterModal').style.display = 'flex'; }
-    function closeCouncilFilterModal() { document.getElementById('councilFilterModal').style.display = 'none'; }
-
-    function applyCouncilFilter() {
-        let startDate = document.getElementById('councilFilterStartDate').value;
-        let endDate = document.getElementById('councilFilterEndDate').value;
-        let data = councilsData[currentCouncil] || { history: [] };
-        
-        if (!startDate && !endDate) {
-            councilFilteredHistory = [];
-            displayCouncilHistory();
-            closeCouncilFilterModal();
-            return;
+    function displayCouncilBlock(councilKey) {
+        let cHistory = (councilsData[councilKey] && councilsData[councilKey].history) ? councilsData[councilKey].history : [];
+        let html = '';
+        for (let h of cHistory.slice(0, 100)) {
+            let icon = h.type === 'Received' ? '💰' : '🤝';
+            let isPos = h.type === 'Received';
+            let detail = '';
+            if (h.recipientName) detail += h.recipientName;
+            if (h.recipientPhone) detail += ' | ' + h.recipientPhone;
+            if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
+            html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
         }
-        
-        councilFilteredHistory = (data.history || []).filter(item => {
-            let itemDate = new Date(item.date);
-            let match = true;
-            if (startDate) { let s = new Date(startDate); s.setHours(0,0,0,0); if (itemDate < s) match = false; }
-            if (endDate && match) { let e = new Date(endDate); e.setHours(23,59,59,999); if (itemDate > e) match = false; }
-            return match;
-        });
-        displayCouncilHistory();
-        showAlert('Filter apply ho gaya!', 'success');
-        closeCouncilFilterModal();
-    }
-
-    function resetCouncilFilter() {
-        document.getElementById('councilFilterStartDate').value = '';
-        document.getElementById('councilFilterEndDate').value = '';
-        councilFilteredHistory = [];
-        displayCouncilHistory();
-        showAlert('Filter reset ho gaya!', 'success');
-        closeCouncilFilterModal();
+        if (cHistory.length === 0) html = '<div class="empty-state">No records found</div>';
+        document.getElementById('councilHistoryList-' + councilKey).innerHTML = html;
     }
 
     // ========== CHAIRMAN UI ==========
@@ -589,34 +677,22 @@
         document.getElementById('totalExpense').innerHTML = 'PKR ' + te.toLocaleString();
         updateCouncilTabNames();
         displayChairmanHistory();
+
+        // Refresh current council block if visible
+        if (activeTab !== 'own') {
+            displayCouncilBlock(activeTab);
+        }
     }
 
     function displayChairmanHistory() {
+        let historyToShow = filteredHistory.length > 0 ? filteredHistory : (chairmanData.history || []);
         let html = '';
-
-        if (activeTab === 'own') {
-            let historyToShow = filteredHistory.length > 0 ? filteredHistory : (chairmanData.history || []);
-            for (let h of historyToShow.slice(0, 100)) {
-                let isPos = h.amount > 0;
-                let icon = h.type === 'Deposit' ? '💰' : h.type === 'Transfer' ? '🔄' : '📝';
-                html += txnRow(icon, h.type, h.date, h.desc || '', isPos, h.amount);
-            }
-            if (historyToShow.length === 0) html = '<div class="empty-state">📭 NO TRANSACTIONS FOUND</div>';
-        } else {
-            let cHistory = (councilsData[activeTab] && councilsData[activeTab].history) ? councilsData[activeTab].history : [];
-            let councilName = (displayNames[activeTab] || activeTab).toUpperCase();
-            for (let h of cHistory.slice(0, 100)) {
-                let icon = h.type === 'Received' ? '💰' : '🤝';
-                let isPos = h.type === 'Received';
-                let detail = '';
-                if (h.recipientName) detail += '👤 ' + h.recipientName;
-                if (h.recipientPhone) detail += ' | 📞 ' + h.recipientPhone;
-                if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
-                html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
-            }
-            if (cHistory.length === 0) html = '<div class="empty-state">📭 NO RECORDS FOR ' + councilName + '</div>';
+        for (let h of historyToShow.slice(0, 100)) {
+            let isPos = h.amount > 0;
+            let icon = h.type === 'Deposit' ? '💰' : h.type === 'Transfer' ? '🔄' : '📝';
+            html += txnRow(icon, h.type, h.date, h.desc || '', isPos, h.amount);
         }
-
+        if (historyToShow.length === 0) html = '<div class="empty-state">No transactions found</div>';
         document.getElementById('chairmanHistory').innerHTML = html;
     }
 
@@ -640,7 +716,7 @@
     function updateCouncilUI() {
         let data = councilsData[currentCouncil] || { balance: 0, history: [] };
         document.getElementById('councilBalance').innerHTML = 'PKR ' + (data.balance || 0).toLocaleString();
-        document.getElementById('councilName').innerHTML = (displayNames[currentCouncil] || currentCouncil).toUpperCase();
+        document.getElementById('councilName').innerHTML = displayNames[currentCouncil] || currentCouncil;
 
         let tr = 0, tp = 0;
         for (let h of (data.history || [])) {
@@ -651,13 +727,7 @@
         document.getElementById('totalPersons').innerHTML = tp;
         document.getElementById('totalDistributions').innerHTML = (data.history || []).filter(h => h.type === 'Distribution').length;
 
-        displayCouncilHistory();
-    }
-
-    function displayCouncilHistory() {
-        let data = councilsData[currentCouncil] || { balance: 0, history: [] };
         let historyToShow = councilFilteredHistory.length > 0 ? councilFilteredHistory : (data.history || []);
-        
         let html = '';
         for (let h of historyToShow.slice(0, 100)) {
             let isPos = h.type === 'Received';
@@ -668,98 +738,8 @@
             if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
             html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
         }
-        if (historyToShow.length === 0) html = '<div class="empty-state">📭 NO RECORDS YET</div>';
+        if (historyToShow.length === 0) html = '<div class="empty-state">No records yet</div>';
         document.getElementById('councilHistory').innerHTML = html;
-    }
-
-    // ========== COUNCIL SHARE ==========
-    function councilShareReport() {
-        let data = councilsData[currentCouncil];
-        let msg = '🏦 *AKHOWAAT FOUNDATION - ' + (displayNames[currentCouncil] || currentCouncil).toUpperCase() + '*\n';
-        msg += '💰 *BALANCE:* PKR ' + (data?.balance || 0).toLocaleString() + '\n';
-        msg += '📊 *DISTRIBUTION HISTORY:*\n';
-        msg += '─────────────────\n';
-        
-        let historyToShow = councilFilteredHistory.length > 0 ? councilFilteredHistory : (data?.history || []);
-        if (historyToShow.length === 0) {
-            msg += '❌ NO DISTRIBUTIONS YET\n';
-        } else {
-            for (let h of historyToShow.slice(0, 15)) {
-                if (h.type === 'Distribution') {
-                    msg += '📅 ' + h.date + '\n';
-                    if (h.recipientName) msg += '👤 ' + h.recipientName + '\n';
-                    if (h.recipientPhone) msg += '📞 ' + h.recipientPhone + '\n';
-                    msg += '💰 AMOUNT: PKR ' + (h.amount || 0).toLocaleString() + '\n';
-                    if (h.desc) msg += '📝 ' + h.desc + '\n';
-                    msg += '─────────────────\n';
-                }
-            }
-        }
-        msg += '\n_📱 GENERATED FROM AKHOWAAT SYSTEM_';
-        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-    }
-
-    // ========== COUNCIL PRINT ==========
-    function councilPrintReport() {
-        let data = councilsData[currentCouncil];
-        let historyToShow = councilFilteredHistory.length > 0 ? councilFilteredHistory : (data?.history || []);
-        
-        let printWindow = window.open('', '_blank');
-        let councilNameUpper = (displayNames[currentCouncil] || currentCouncil).toUpperCase();
-        
-        let rows = '';
-        for (let h of historyToShow) {
-            rows += `<tr>
-                <td>${h.date}</td>
-                <td>${h.type}</td>
-                <td>${h.recipientName || '-'}</td>
-                <td>${h.recipientPhone || '-'}</td>
-                <td>PKR ${(h.amount || 0).toLocaleString()}</td>
-                <td>${h.desc || '-'}</td>
-            </tr>`;
-        }
-        if (historyToShow.length === 0) {
-            rows = '<tr><td colspan="6" style="text-align:center;">NO RECORDS FOUND</td></tr>';
-        }
-        
-        printWindow.document.write(`
-            <html>
-            <head>
-                <title>${councilNameUpper} - DISTRIBUTION REPORT</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    h1 { color: #11998e; text-align: center; }
-                    .header { text-align: center; margin-bottom: 30px; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-                    th { background: #11998e; color: white; }
-                    .balance { font-size: 18px; font-weight: bold; margin: 20px 0; text-align: center; }
-                    .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>🤲 AKHOWAAT WELFARE FOUNDATION</h1>
-                    <h2>${councilNameUpper} - DISTRIBUTION REPORT</h2>
-                    <p>GENERATED ON: ${new Date().toLocaleString()}</p>
-                </div>
-                <div class="balance">
-                    CURRENT BALANCE: PKR ${(data?.balance || 0).toLocaleString()}
-                </div>
-                <table>
-                    <thead>
-                        <tr><th>DATE</th><th>TYPE</th><th>RECIPIENT NAME</th><th>PHONE</th><th>AMOUNT</th><th>DESCRIPTION</th></tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                </table>
-                <div class="footer">
-                    AKHOWAAT WELFARE FOUNDATION - OFFICIAL REPORT
-                </div>
-            </body>
-            </html>
-        `);
-        printWindow.print();
-        printWindow.close();
     }
 
     // ========== DEPOSIT ==========
@@ -777,7 +757,7 @@
         closeModal('depositModal');
         document.getElementById('depositAmount').value = '';
         document.getElementById('depositDesc').value = '';
-        showAlert('PKR ' + amount.toLocaleString() + ' DEPOSIT HO GAYA!', 'success');
+        showAlert('PKR ' + amount.toLocaleString() + ' deposit ho gaya!', 'success');
     }
 
     // ========== TRANSFER ==========
@@ -793,18 +773,32 @@
         }
 
         isTransferring = true;
-        document.getElementById('transferBtn').innerHTML = 'PROCESSING...';
+        document.getElementById('transferBtn').innerHTML = 'Processing...';
         document.getElementById('transferBtn').disabled = true;
 
         try {
+            const lc = await database.ref('chairmanData').get();
+            if (lc.exists()) chairmanData = lc.val();
+            if (!chairmanData.history) chairmanData.history = [];
+
+            const lcs = await database.ref('councilsData').get();
+            if (lcs.exists()) councilsData = lcs.val();
+            if (!councilsData[council]) councilsData[council] = { balance: 0, history: [] };
+            if (!councilsData[council].history) councilsData[council].history = [];
+            if (typeof councilsData[council].balance !== 'number') councilsData[council].balance = 0;
+
+            if (amount > (chairmanData.balance || 0)) {
+                showAlert('Balance kam hai!', 'danger'); return;
+            }
+
             let now = new Date().toLocaleString();
-            let cName = (displayNames[council] || council).toUpperCase();
+            let cName = displayNames[council] || council;
 
             chairmanData.balance = (chairmanData.balance || 0) - amount;
-            chairmanData.history.unshift({ date: now, type: 'Transfer', amount: -amount, desc: cName + ' KO: ' + desc });
+            chairmanData.history.unshift({ date: now, type: 'Transfer', amount: -amount, desc: cName + ' ko: ' + desc });
 
             councilsData[council].balance = (councilsData[council].balance || 0) + amount;
-            councilsData[council].history.unshift({ date: now, type: 'Received', amount, desc: 'CHAIRMAN SE MILA: ' + desc });
+            councilsData[council].history.unshift({ date: now, type: 'Received', amount, desc: 'Chairman se mila: ' + desc });
 
             await database.ref().update({ 'chairmanData': chairmanData, 'councilsData': councilsData });
             updateChairmanUI();
@@ -812,13 +806,13 @@
             closeModal('transferModal');
             document.getElementById('transferAmount').value = '';
             document.getElementById('transferDesc').value = '';
-            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + cName + ' KO TRANSFER HO GAYA!', 'success');
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + cName + ' ko transfer ho gaya!', 'success');
         } catch(err) {
             console.error('Transfer error:', err);
             showAlert('Transfer fail hua! Dobara try karein.', 'danger');
         } finally {
             isTransferring = false;
-            document.getElementById('transferBtn').innerHTML = 'TRANSFER';
+            document.getElementById('transferBtn').innerHTML = 'Transfer';
             document.getElementById('transferBtn').disabled = false;
         }
     }
@@ -862,21 +856,40 @@
         }
 
         isDistributing = true;
-        document.getElementById('distributeBtn').innerHTML = 'PROCESSING...';
+        document.getElementById('distributeBtn').innerHTML = 'Processing...';
         document.getElementById('distributeBtn').disabled = true;
 
         try {
+            const lcs = await database.ref('councilsData').get();
+            if (lcs.exists()) councilsData = lcs.val();
+            if (!councilsData[currentCouncil]) councilsData[currentCouncil] = { balance: 0, history: [] };
+            if (!councilsData[currentCouncil].history) councilsData[currentCouncil].history = [];
+
+            const lc = await database.ref('chairmanData').get();
+            if (lc.exists()) chairmanData = lc.val();
+            if (!chairmanData.history) chairmanData.history = [];
+
+            if (amount > (councilsData[currentCouncil].balance || 0)) {
+                showAlert('Council wallet mein balance kam hai!', 'danger'); return;
+            }
+
             let now = new Date().toLocaleString();
-            let cName = (displayNames[currentCouncil] || currentCouncil).toUpperCase();
+            let cName = displayNames[currentCouncil] || currentCouncil;
 
             councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - amount;
             councilsData[currentCouncil].history.unshift({
-                date: now, type: 'Distribution', amount,
-                recipientName: name, recipientPhone: phone, desc: desc
+                date: now,
+                type: 'Distribution',
+                amount,
+                recipientName: name,
+                recipientPhone: phone,
+                desc: desc
             });
 
             chairmanData.history.unshift({
-                date: now, type: 'Council Distribution', amount: -amount,
+                date: now,
+                type: 'Council Distribution',
+                amount: -amount,
                 desc: cName + ' → ' + name + ' (' + phone + '): ' + desc
             });
 
@@ -890,46 +903,34 @@
             document.getElementById('recipientPhone').value = '';
             document.getElementById('distributionAmount').value = '';
             document.getElementById('distributionDesc').value = '';
-            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + name + ' KO MIL GAYA!', 'success');
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + name + ' ko mil gaya!', 'success');
         } catch(err) {
             console.error('Distribute error:', err);
             showAlert('Distribution fail hui! Dobara try karein.', 'danger');
         } finally {
             isDistributing = false;
-            document.getElementById('distributeBtn').innerHTML = 'DISTRIBUTE';
+            document.getElementById('distributeBtn').innerHTML = 'Distribute';
             document.getElementById('distributeBtn').disabled = false;
         }
     }
 
-    // ========== FILTER ==========
+    // ========== FILTER (Chairman) ==========
     function openFilterModal() { document.getElementById('filterModal').style.display = 'flex'; }
     function closeFilterModal() { document.getElementById('filterModal').style.display = 'none'; }
 
     function applyDateFilter() {
         let startDate = document.getElementById('filterStartDate').value;
         let endDate = document.getElementById('filterEndDate').value;
-        
-        if (activeTab === 'own') {
-            let src = (chairmanData.history || []);
-            if (!startDate && !endDate) { filteredHistory = []; displayChairmanHistory(); closeFilterModal(); return; }
-            filteredHistory = src.filter(item => {
-                let itemDate = new Date(item.date); let match = true;
-                if (startDate) { let s = new Date(startDate); s.setHours(0,0,0,0); if (itemDate < s) match = false; }
-                if (endDate && match) { let e = new Date(endDate); e.setHours(23,59,59,999); if (itemDate > e) match = false; }
-                return match;
-            });
-            displayChairmanHistory();
-        } else {
-            let src = (councilsData[activeTab] && councilsData[activeTab].history) || [];
-            if (!startDate && !endDate) { councilFilteredHistory = []; displayChairmanHistory(); closeFilterModal(); return; }
-            councilFilteredHistory = src.filter(item => {
-                let itemDate = new Date(item.date); let match = true;
-                if (startDate) { let s = new Date(startDate); s.setHours(0,0,0,0); if (itemDate < s) match = false; }
-                if (endDate && match) { let e = new Date(endDate); e.setHours(23,59,59,999); if (itemDate > e) match = false; }
-                return match;
-            });
-            displayChairmanHistory();
-        }
+        if (!startDate && !endDate) { filteredHistory = []; displayChairmanHistory(); closeFilterModal(); return; }
+
+        let src = chairmanData.history || [];
+        filteredHistory = src.filter(item => {
+            let itemDate = new Date(item.date); let match = true;
+            if (startDate) { let s = new Date(startDate); s.setHours(0,0,0,0); if (itemDate < s) match = false; }
+            if (endDate && match) { let e = new Date(endDate); e.setHours(23,59,59,999); if (itemDate > e) match = false; }
+            return match;
+        });
+        displayChairmanHistory();
         showAlert('Filter apply ho gaya!', 'success');
         closeFilterModal();
     }
@@ -937,14 +938,161 @@
     function resetFilter() {
         document.getElementById('filterStartDate').value = '';
         document.getElementById('filterEndDate').value = '';
-        if (activeTab === 'own') {
-            filteredHistory = [];
-        } else {
-            councilFilteredHistory = [];
-        }
+        filteredHistory = [];
         displayChairmanHistory();
         showAlert('Filter reset ho gaya!', 'success');
         closeFilterModal();
+    }
+
+    // ========== FILTER (Council) ==========
+    function openCouncilFilterModal() { document.getElementById('councilFilterModal').style.display = 'flex'; }
+    function closeCouncilFilterModal() { document.getElementById('councilFilterModal').style.display = 'none'; }
+
+    function applyCouncilDateFilter() {
+        let startDate = document.getElementById('councilFilterStartDate').value;
+        let endDate = document.getElementById('councilFilterEndDate').value;
+        let data = councilsData[currentCouncil] || { history: [] };
+        if (!startDate && !endDate) { councilFilteredHistory = []; updateCouncilUI(); closeCouncilFilterModal(); return; }
+
+        councilFilteredHistory = (data.history || []).filter(item => {
+            let itemDate = new Date(item.date); let match = true;
+            if (startDate) { let s = new Date(startDate); s.setHours(0,0,0,0); if (itemDate < s) match = false; }
+            if (endDate && match) { let e = new Date(endDate); e.setHours(23,59,59,999); if (itemDate > e) match = false; }
+            return match;
+        });
+        updateCouncilUI();
+        showAlert('Filter apply ho gaya!', 'success');
+        closeCouncilFilterModal();
+    }
+
+    function resetCouncilFilter() {
+        document.getElementById('councilFilterStartDate').value = '';
+        document.getElementById('councilFilterEndDate').value = '';
+        councilFilteredHistory = [];
+        updateCouncilUI();
+        showAlert('Filter reset ho gaya!', 'success');
+        closeCouncilFilterModal();
+    }
+
+    // ========== SHARE ==========
+    function shareCouncilReport(councilKey) {
+        let cData = councilsData[councilKey] || { balance: 0, history: [] };
+        let cName = displayNames[councilKey] || councilKey;
+        let history = cData.history || [];
+
+        let totalReceived = history.filter(h => h.type === 'Received').reduce((a,b) => a + (b.amount||0), 0);
+        let totalDistributed = history.filter(h => h.type === 'Distribution').reduce((a,b) => a + (b.amount||0), 0);
+        let totalPersons = history.filter(h => h.type === 'Distribution').length;
+
+        let msg = '🤲 AKHOWAAT WELFARE FOUNDATION\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '📋 ' + cName + ' - History Report\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '💰 Current Balance: PKR ' + (cData.balance || 0).toLocaleString() + '\n';
+        msg += '📥 Total Received: PKR ' + totalReceived.toLocaleString() + '\n';
+        msg += '📤 Total Distributed: PKR ' + totalDistributed.toLocaleString() + '\n';
+        msg += '👥 Persons Helped: ' + totalPersons + '\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '📜 DETAILS:\n\n';
+
+        for (let h of history.slice(0, 50)) {
+            let sign = h.type === 'Received' ? '📥' : '📤';
+            msg += sign + ' ' + h.type + '\n';
+            msg += '   💵 PKR ' + (h.amount || 0).toLocaleString() + '\n';
+            if (h.recipientName) msg += '   👤 ' + h.recipientName + '\n';
+            if (h.recipientPhone) msg += '   📞 ' + h.recipientPhone + '\n';
+            if (h.desc) msg += '   📝 ' + h.desc + '\n';
+            msg += '   🕐 ' + h.date + '\n\n';
+        }
+
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    function printCouncilHistory(councilKey) {
+        let cData = councilsData[councilKey] || { balance: 0, history: [] };
+        let cName = displayNames[councilKey] || councilKey;
+        let history = cData.history || [];
+
+        let totalReceived = history.filter(h => h.type === 'Received').reduce((a,b) => a + (b.amount||0), 0);
+        let totalDistributed = history.filter(h => h.type === 'Distribution').reduce((a,b) => a + (b.amount||0), 0);
+        let totalPersons = history.filter(h => h.type === 'Distribution').length;
+
+        let rows = history.map(h => `
+            <tr>
+                <td>${h.type}</td>
+                <td>PKR ${(h.amount||0).toLocaleString()}</td>
+                <td>${h.recipientName || '-'}</td>
+                <td>${h.recipientPhone || '-'}</td>
+                <td>${h.desc || '-'}</td>
+                <td>${h.date}</td>
+            </tr>
+        `).join('');
+
+        let printContent = `
+            <html><head><title>AKHOWAAT - ${cName} History</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1 { text-align: center; font-size: 22px; margin-bottom: 5px; }
+                h2 { text-align: center; font-size: 16px; color: #555; margin-bottom: 20px; }
+                .summary { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+                .sum-box { border: 1px solid #ccc; padding: 10px 20px; border-radius: 8px; text-align: center; }
+                .sum-box .val { font-size: 18px; font-weight: bold; }
+                .sum-box .lbl { font-size: 12px; color: #888; }
+                table { width: 100%; border-collapse: collapse; font-size: 13px; }
+                th { background: #667eea; color: white; padding: 8px; text-align: left; }
+                td { padding: 8px; border-bottom: 1px solid #eee; }
+                tr:nth-child(even) { background: #f9f9f9; }
+                @media print { button { display: none; } }
+            </style></head>
+            <body>
+                <h1>🤲 AKHOWAAT WELFARE FOUNDATION</h1>
+                <h2>${cName} - History Report</h2>
+                <div class="summary">
+                    <div class="sum-box"><div class="val">PKR ${(cData.balance||0).toLocaleString()}</div><div class="lbl">Current Balance</div></div>
+                    <div class="sum-box"><div class="val">PKR ${totalReceived.toLocaleString()}</div><div class="lbl">Total Received</div></div>
+                    <div class="sum-box"><div class="val">PKR ${totalDistributed.toLocaleString()}</div><div class="lbl">Total Distributed</div></div>
+                    <div class="sum-box"><div class="val">${totalPersons}</div><div class="lbl">Persons Helped</div></div>
+                </div>
+                <table>
+                    <thead><tr><th>Type</th><th>Amount</th><th>Recipient</th><th>Phone</th><th>Reason</th><th>Date/Time</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <br>
+                <button onclick="window.print()">🖨️ Print</button>
+            </body></html>
+        `;
+
+        let win = window.open('', '_blank');
+        win.document.write(printContent);
+        win.document.close();
+        win.focus();
+    }
+
+    function shareReport() {
+        if (currentUser === 'chairman') {
+            // Chairman's own transactions share
+            let history = chairmanData.history || [];
+            let totalDeposit = history.filter(h => h.type === 'Deposit').reduce((a,b) => a + (b.amount||0), 0);
+            let totalTransfer = history.filter(h => h.type === 'Transfer').reduce((a,b) => a + Math.abs(b.amount||0), 0);
+            let totalExpense = history.filter(h => h.type === 'Expense').reduce((a,b) => a + Math.abs(b.amount||0), 0);
+
+            let msg = '🤲 AKHOWAAT WELFARE FOUNDATION\n';
+            msg += '━━━━━━━━━━━━━━━━━━━\n';
+            msg += '👑 Chairman - Report\n';
+            msg += '━━━━━━━━━━━━━━━━━━━\n';
+            msg += '💰 Balance: PKR ' + (chairmanData.balance || 0).toLocaleString() + '\n';
+            msg += '📥 Total Deposits: PKR ' + totalDeposit.toLocaleString() + '\n';
+            msg += '📤 Total Transfers: PKR ' + totalTransfer.toLocaleString() + '\n';
+            msg += '📝 Total Expenses: PKR ' + totalExpense.toLocaleString() + '\n';
+            window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+        } else {
+            // Council share
+            shareCouncilReport(currentCouncil);
+        }
+    }
+
+    function printCouncilSelf() {
+        printCouncilHistory(currentCouncil);
     }
 
     // ========== SETTINGS ==========
@@ -955,52 +1103,44 @@
         openModal('changePasswordModal');
         window.passwordCallback = async function(p) {
             credentials.chairman = p; await saveCredentials();
-            closeModal('changePasswordModal'); showAlert('PASSWORD CHANGE HO GAYA!', 'success');
+            closeModal('changePasswordModal'); showAlert('Password change ho gaya!', 'success');
         };
     }
     async function councilChangePassword() {
         openModal('changePasswordModal');
         window.passwordCallback = async function(p) {
             credentials[currentCouncil] = p; await saveCredentials();
-            closeModal('changePasswordModal'); showAlert('PASSWORD CHANGE HO GAYA!', 'success');
+            closeModal('changePasswordModal'); showAlert('Password change ho gaya!', 'success');
         };
     }
     async function chairmanClearHistory() {
-        if (confirm('HISTORY CLEAR KAREIN? BALANCE RAHEGA.')) {
-            chairmanData.history = []; await saveChairman(); updateChairmanUI(); showAlert('HISTORY CLEAR HO GAYI!', 'success');
+        if (confirm('History clear karein? Balance rahega.')) {
+            chairmanData.history = []; await saveChairman(); updateChairmanUI(); showAlert('History clear ho gayi!', 'success');
         }
     }
     async function councilClearHistory() {
-        if (confirm('HISTORY CLEAR KAREIN? BALANCE RAHEGA.')) {
-            councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); showAlert('HISTORY CLEAR HO GAYI!', 'success');
+        if (confirm('History clear karein? Balance rahega.')) {
+            councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); showAlert('History clear ho gayi!', 'success');
         }
     }
     async function chairmanResetWallet() {
-        if (confirm('POORA RESET! SAB DATA DELETE HO JAYEGA!')) {
-            chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); showAlert('WALLET RESET HO GAYA!', 'success');
+        if (confirm('POORA RESET! Sab data delete ho jayega!')) {
+            chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); showAlert('Wallet reset ho gaya!', 'success');
         }
     }
     async function councilResetWallet() {
-        if (confirm('POORA RESET! SAB DATA DELETE HO JAYEGA!')) {
-            councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); showAlert('WALLET RESET HO GAYA!', 'success');
+        if (confirm('POORA RESET! Sab data delete ho jayega!')) {
+            councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); showAlert('Wallet reset ho gaya!', 'success');
         }
     }
     function savePassword() {
         let np = document.getElementById('newPassword').value;
         let cp = document.getElementById('confirmPassword').value;
-        if (!np) { showAlert('PASSWORD ENTER KAREIN', 'danger'); return; }
-        if (np !== cp) { showAlert('PASSWORDS MATCH NAHI KAR RAHE', 'danger'); return; }
+        if (!np) { showAlert('Password enter karein', 'danger'); return; }
+        if (np !== cp) { showAlert('Passwords match nahi kar rahe', 'danger'); return; }
         if (window.passwordCallback) { window.passwordCallback(np); window.passwordCallback = null; }
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
-    }
-
-    function chairmanShareReport() {
-        let msg = '🏦 AKHOWAAT FOUNDATION - CHAIRMAN REPORT\n';
-        msg += '💰 BALANCE: PKR ' + (chairmanData.balance || 0).toLocaleString() + '\n';
-        msg += '📊 TOTAL DEPOSITS: PKR ' + (chairmanData.history || []).filter(h=>h.type==='Deposit').reduce((a,b)=>a+(b.amount||0),0).toLocaleString() + '\n';
-        msg += '📤 TOTAL TRANSFERS: PKR ' + (chairmanData.history || []).filter(h=>h.type==='Transfer').reduce((a,b)=>a+Math.abs(b.amount||0),0).toLocaleString();
-        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -1030,13 +1170,13 @@
             document.getElementById('password').value = '';
         } else {
             err.style.display = 'block';
-            err.innerHTML = '❌ GALAT PASSWORD! DOBARA TRY KAREIN.';
+            err.innerHTML = '❌ Galat password! Dobara try karein.';
             setTimeout(() => err.style.display = 'none', 3000);
         }
     }
 
     function logout() {
-        currentUser = null; currentCouncil = null; activeTab = 'own'; filteredHistory = [];
+        currentUser = null; currentCouncil = null; activeTab = 'own'; filteredHistory = []; councilFilteredHistory = [];
         sessionStorage.removeItem('currentUser'); sessionStorage.removeItem('currentCouncil');
         document.getElementById('loginPage').style.display = 'flex';
         document.getElementById('chairmanDashboard').style.display = 'none';
@@ -1064,20 +1204,18 @@
     document.getElementById('distributeBtn').onclick = distribute;
     document.getElementById('closeDistribution').onclick = () => closeModal('distributionModal');
 
-    document.getElementById('shareBtn').onclick = chairmanShareReport;
-    document.getElementById('councilShareBtn').onclick = councilShareReport;
-    document.getElementById('councilPrintBtn').onclick = councilPrintReport;
+    document.getElementById('councilShareBtn').onclick = shareReport;
+    document.getElementById('councilPrintBtn').onclick = printCouncilSelf;
 
     document.getElementById('openFilterBtn').onclick = openFilterModal;
     document.getElementById('closeFilterBtn').onclick = closeFilterModal;
     document.getElementById('applyFilterBtn').onclick = applyDateFilter;
     document.getElementById('resetFilterBtn').onclick = resetFilter;
 
-    // Council filter listeners
     document.getElementById('councilOpenFilterBtn').onclick = openCouncilFilterModal;
-    document.getElementById('closeCouncilFilterBtn').onclick = closeCouncilFilterModal;
-    document.getElementById('applyCouncilFilterBtn').onclick = applyCouncilFilter;
-    document.getElementById('resetCouncilFilterBtn').onclick = resetCouncilFilter;
+    document.getElementById('councilCloseFilterBtn').onclick = closeCouncilFilterModal;
+    document.getElementById('councilApplyFilterBtn').onclick = applyCouncilDateFilter;
+    document.getElementById('councilResetFilterBtn').onclick = resetCouncilFilter;
 
     document.getElementById('chairmanChangePassword').onclick = chairmanChangePassword;
     document.getElementById('chairmanClearHistoryBtn').onclick = chairmanClearHistory;
