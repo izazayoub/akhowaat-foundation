@@ -32,12 +32,15 @@
             text-align: center;
             margin-bottom: 30px;
             color: #333;
-            font-size: 20px;
+            font-size: 14px;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            line-height: 1.3;
+            line-height: 1.4;
             white-space: nowrap;
+        }
+        @media (max-width: 360px) {
+            .login-card h2 { font-size: 12px; white-space: normal; }
         }
         .login-card input, .login-card select {
             width: 100%; padding: 12px; margin-bottom: 15px;
@@ -218,10 +221,6 @@
         @media (max-width: 500px) {
             .balance-amount { font-size: 36px; }
             .action-icon { font-size: 28px; }
-            .login-card h2 { font-size: 16px; }
-        }
-        @media (max-width: 380px) {
-            .login-card h2 { font-size: 14px; letter-spacing: 0.5px; }
         }
     </style>
 </head>
@@ -249,9 +248,8 @@
 <!-- CHAIRMAN DASHBOARD -->
 <div id="chairmanDashboard" class="dashboard">
     <div class="navbar">
-        <h3>🤲 AKHOWAAT - Chairman</h3>
+        <h3>🏛️ CHAIRMAN</h3>
         <div class="navbar-right">
-            <div class="sync-badge" id="navSyncStatusChairman">🔄 Live Sync</div>
             <div class="logout-btn" id="chairmanLogout"><span class="logout-icon">🚪</span> Logout</div>
         </div>
     </div>
@@ -292,6 +290,9 @@
 
             <!-- Own transactions list -->
             <div id="ownHistorySection">
+                <div style="padding: 8px 15px; border-bottom: 1px solid #f0f0f0; display:flex; justify-content:flex-end;">
+                    <button class="share-btn" id="ownShareBtn">📱 Share All</button>
+                </div>
                 <div class="history-list" id="chairmanHistory"></div>
             </div>
 
@@ -346,9 +347,8 @@
 <!-- COUNCIL DASHBOARD -->
 <div id="councilDashboard" class="dashboard">
     <div class="navbar council-navbar">
-        <h3>🤝 AKHOWAAT - <span id="councilName">Council</span></h3>
+        <h3>🤝 <span id="councilName">Council</span></h3>
         <div class="navbar-right">
-            <div class="sync-badge" id="navSyncStatusCouncil">🔄 Live Sync</div>
             <div class="logout-btn" id="councilLogout"><span class="logout-icon">🚪</span> Logout</div>
         </div>
     </div>
@@ -451,10 +451,10 @@
 <!-- Distribution Modal -->
 <div id="distributionModal" class="modal"><div class="modal-content">
     <h3>🤝 Distribute Aid</h3>
-    <input type="text" id="recipientName" placeholder="Recipient Name (Naam)">
+    <input type="text" id="recipientName" placeholder="Recipient Name">
     <input type="tel" id="recipientPhone" placeholder="Phone Number">
     <input type="number" id="distributionAmount" placeholder="Amount (PKR)">
-    <input type="text" id="distributionDesc" placeholder="Reason / Wajah">
+    <input type="text" id="distributionDesc" placeholder="Reason">
     <div class="modal-buttons">
         <button class="btn-primary" id="distributeBtn">Distribute</button>
         <button class="btn-secondary" id="closeDistribution">Cancel</button>
@@ -558,8 +558,6 @@
             let syncEl = document.getElementById('syncStatus');
             syncEl.innerHTML = '✅ Live Sync';
             syncEl.style.background = '#10b981';
-            document.getElementById('navSyncStatusChairman').innerHTML = '✅ Live Sync';
-            document.getElementById('navSyncStatusCouncil').innerHTML = '✅ Live Sync';
 
             if (currentUser === 'chairman') updateChairmanUI();
             else if (currentCouncil) updateCouncilUI();
@@ -657,7 +655,7 @@
             if (h.recipientName) detail += h.recipientName;
             if (h.recipientPhone) detail += ' | ' + h.recipientPhone;
             if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
-            html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
+            html += txnRow(icon, h.type, h.date, detail, isPos, h.amount, h);
         }
         if (cHistory.length === 0) html = '<div class="empty-state">No records found</div>';
         document.getElementById('councilHistoryList-' + councilKey).innerHTML = html;
@@ -690,13 +688,14 @@
         for (let h of historyToShow.slice(0, 100)) {
             let isPos = h.amount > 0;
             let icon = h.type === 'Deposit' ? '💰' : h.type === 'Transfer' ? '🔄' : '📝';
-            html += txnRow(icon, h.type, h.date, h.desc || '', isPos, h.amount);
+            html += txnRow(icon, h.type, h.date, h.desc || '', isPos, h.amount, h);
         }
         if (historyToShow.length === 0) html = '<div class="empty-state">No transactions found</div>';
         document.getElementById('chairmanHistory').innerHTML = html;
     }
 
-    function txnRow(icon, type, date, desc, isPos, amount) {
+    function txnRow(icon, type, date, desc, isPos, amount, txnData) {
+        let dataStr = txnData ? encodeURIComponent(JSON.stringify(txnData)) : '';
         return `<div class="transaction-item">
             <div class="transaction-left">
                 <div class="transaction-icon">${icon}</div>
@@ -706,8 +705,12 @@
                     ${desc ? `<div style="font-size:10px;color:#888;">${desc}</div>` : ''}
                 </div>
             </div>
-            <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">
-                ${isPos ? '+' : '-'} PKR ${Math.abs(amount).toLocaleString()}
+            <div style="display:flex;align-items:center;gap:4px;">
+                <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">
+                    ${isPos ? '+' : '-'} PKR ${Math.abs(amount).toLocaleString()}
+                </div>
+                <button onclick='shareSingleTxn(${JSON.stringify(txnData || {type,date,desc,amount})})' style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;" title="Share">📤</button>
+                <button onclick='printSingleTxn(${JSON.stringify(txnData || {type,date,desc,amount})})' style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;" title="Print">🖨️</button>
             </div>
         </div>`;
     }
@@ -736,7 +739,7 @@
             if (h.recipientName) detail += '👤 ' + h.recipientName;
             if (h.recipientPhone) detail += ' | 📞 ' + h.recipientPhone;
             if (h.desc) detail += (detail ? ' | ' : '') + h.desc;
-            html += txnRow(icon, h.type, h.date, detail, isPos, h.amount);
+            html += txnRow(icon, h.type, h.date, detail, isPos, h.amount, h);
         }
         if (historyToShow.length === 0) html = '<div class="empty-state">No records yet</div>';
         document.getElementById('councilHistory').innerHTML = html;
@@ -746,7 +749,7 @@
     async function deposit() {
         let amount = parseFloat(document.getElementById('depositAmount').value);
         let desc = document.getElementById('depositDesc').value || 'Manual deposit';
-        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+        if (isNaN(amount) || amount <= 0) { showAlert('Please enter a valid amount', 'danger'); return; }
 
         chairmanData.balance = (chairmanData.balance || 0) + amount;
         if (!chairmanData.history) chairmanData.history = [];
@@ -757,7 +760,7 @@
         closeModal('depositModal');
         document.getElementById('depositAmount').value = '';
         document.getElementById('depositDesc').value = '';
-        showAlert('PKR ' + amount.toLocaleString() + ' deposit ho gaya!', 'success');
+        showAlert('PKR ' + amount.toLocaleString() + ' deposited successfully!', 'success');
     }
 
     // ========== TRANSFER ==========
@@ -767,9 +770,9 @@
         let amount = parseFloat(document.getElementById('transferAmount').value);
         let desc = document.getElementById('transferDesc').value || 'Fund transfer';
 
-        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+        if (isNaN(amount) || amount <= 0) { showAlert('Please enter a valid amount', 'danger'); return; }
         if (amount > (chairmanData.balance || 0)) {
-            showAlert('Balance kam hai! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger'); return;
+            showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger'); return;
         }
 
         isTransferring = true;
@@ -788,7 +791,7 @@
             if (typeof councilsData[council].balance !== 'number') councilsData[council].balance = 0;
 
             if (amount > (chairmanData.balance || 0)) {
-                showAlert('Balance kam hai!', 'danger'); return;
+                showAlert('Insufficient balance!', 'danger'); return;
             }
 
             let now = new Date().toLocaleString();
@@ -806,10 +809,10 @@
             closeModal('transferModal');
             document.getElementById('transferAmount').value = '';
             document.getElementById('transferDesc').value = '';
-            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + cName + ' ko transfer ho gaya!', 'success');
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' transferred to ' + cName + '!', 'success');
         } catch(err) {
             console.error('Transfer error:', err);
-            showAlert('Transfer fail hua! Dobara try karein.', 'danger');
+            showAlert('Transfer failed! Please try again.', 'danger');
         } finally {
             isTransferring = false;
             document.getElementById('transferBtn').innerHTML = 'Transfer';
@@ -822,9 +825,9 @@
         let category = document.getElementById('expenseCategory').value;
         let amount = parseFloat(document.getElementById('expenseAmount').value);
         let desc = document.getElementById('expenseDesc').value || '';
-        if (!category) { showAlert('Category enter karein', 'danger'); return; }
-        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
-        if (amount > (chairmanData.balance || 0)) { showAlert('Balance kam hai!', 'danger'); return; }
+        if (!category) { showAlert('Please enter a category', 'danger'); return; }
+        if (isNaN(amount) || amount <= 0) { showAlert('Please enter a valid amount', 'danger'); return; }
+        if (amount > (chairmanData.balance || 0)) { showAlert('Insufficient balance!', 'danger'); return; }
 
         if (!chairmanData.history) chairmanData.history = [];
         chairmanData.balance = (chairmanData.balance || 0) - amount;
@@ -836,7 +839,7 @@
         document.getElementById('expenseCategory').value = '';
         document.getElementById('expenseAmount').value = '';
         document.getElementById('expenseDesc').value = '';
-        showAlert('Expense add ho gaya: PKR ' + amount.toLocaleString(), 'success');
+        showAlert('Expense added: PKR ' + amount.toLocaleString(), 'success');
     }
 
     // ========== DISTRIBUTE ==========
@@ -848,11 +851,11 @@
         let amount = parseFloat(document.getElementById('distributionAmount').value);
         let desc = document.getElementById('distributionDesc').value.trim() || 'Aid distribution';
 
-        if (!name) { showAlert('Recipient ka naam zaroor likhein', 'danger'); return; }
-        if (!phone) { showAlert('Phone number zaroor likhein', 'danger'); return; }
-        if (isNaN(amount) || amount <= 0) { showAlert('Valid amount enter karein', 'danger'); return; }
+        if (!name) { showAlert('Please enter recipient name', 'danger'); return; }
+        if (!phone) { showAlert('Please enter phone number', 'danger'); return; }
+        if (isNaN(amount) || amount <= 0) { showAlert('Please enter a valid amount', 'danger'); return; }
         if (amount > (councilsData[currentCouncil]?.balance || 0)) {
-            showAlert('Council wallet mein balance kam hai!', 'danger'); return;
+            showAlert('Insufficient council wallet balance!', 'danger'); return;
         }
 
         isDistributing = true;
@@ -870,7 +873,7 @@
             if (!chairmanData.history) chairmanData.history = [];
 
             if (amount > (councilsData[currentCouncil].balance || 0)) {
-                showAlert('Council wallet mein balance kam hai!', 'danger'); return;
+                showAlert('Insufficient council wallet balance!', 'danger'); return;
             }
 
             let now = new Date().toLocaleString();
@@ -903,10 +906,10 @@
             document.getElementById('recipientPhone').value = '';
             document.getElementById('distributionAmount').value = '';
             document.getElementById('distributionDesc').value = '';
-            showAlert('✅ PKR ' + amount.toLocaleString() + ' ' + name + ' ko mil gaya!', 'success');
+            showAlert('✅ PKR ' + amount.toLocaleString() + ' distributed to ' + name + '!', 'success');
         } catch(err) {
             console.error('Distribute error:', err);
-            showAlert('Distribution fail hui! Dobara try karein.', 'danger');
+            showAlert('Distribution failed! Please try again.', 'danger');
         } finally {
             isDistributing = false;
             document.getElementById('distributeBtn').innerHTML = 'Distribute';
@@ -931,7 +934,7 @@
             return match;
         });
         displayChairmanHistory();
-        showAlert('Filter apply ho gaya!', 'success');
+        showAlert('Filter applied!', 'success');
         closeFilterModal();
     }
 
@@ -940,7 +943,7 @@
         document.getElementById('filterEndDate').value = '';
         filteredHistory = [];
         displayChairmanHistory();
-        showAlert('Filter reset ho gaya!', 'success');
+        showAlert('Filter reset!', 'success');
         closeFilterModal();
     }
 
@@ -961,7 +964,7 @@
             return match;
         });
         updateCouncilUI();
-        showAlert('Filter apply ho gaya!', 'success');
+        showAlert('Filter applied!', 'success');
         closeCouncilFilterModal();
     }
 
@@ -970,7 +973,7 @@
         document.getElementById('councilFilterEndDate').value = '';
         councilFilteredHistory = [];
         updateCouncilUI();
-        showAlert('Filter reset ho gaya!', 'success');
+        showAlert('Filter reset!', 'success');
         closeCouncilFilterModal();
     }
 
@@ -1068,25 +1071,76 @@
         win.focus();
     }
 
+    function shareSingleTxn(h) {
+        let msg = '🤲 AKHOWAAT WELFARE FOUNDATION\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '📋 Transaction Detail\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '🔖 Type: ' + h.type + '\n';
+        msg += '💵 Amount: PKR ' + Math.abs(h.amount || 0).toLocaleString() + '\n';
+        if (h.recipientName) msg += '👤 Recipient: ' + h.recipientName + '\n';
+        if (h.recipientPhone) msg += '📞 Phone: ' + h.recipientPhone + '\n';
+        if (h.desc) msg += '📝 Details: ' + h.desc + '\n';
+        msg += '🕐 Date: ' + h.date + '\n';
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    function printSingleTxn(h) {
+        let win = window.open('', '_blank');
+        win.document.write(`<html><head><title>Transaction - AKHOWAAT</title>
+        <style>body{font-family:Arial,sans-serif;padding:30px;max-width:400px;margin:auto;}
+        h1{font-size:16px;text-align:center;margin-bottom:5px;}
+        h2{font-size:13px;text-align:center;color:#666;margin-bottom:20px;}
+        table{width:100%;border-collapse:collapse;}
+        td{padding:10px;border-bottom:1px solid #eee;font-size:14px;}
+        td:first-child{font-weight:bold;color:#555;width:40%;}
+        .amount{font-size:20px;font-weight:bold;text-align:center;padding:15px;background:#f0f8f0;border-radius:10px;margin:15px 0;}
+        @media print{button{display:none;}}</style></head><body>
+        <h1>🤲 AKHOWAAT WELFARE FOUNDATION</h1>
+        <h2>Transaction Receipt</h2>
+        <div class="amount">PKR ${Math.abs(h.amount||0).toLocaleString()}</div>
+        <table>
+            <tr><td>Type</td><td>${h.type||'-'}</td></tr>
+            ${h.recipientName ? `<tr><td>Recipient</td><td>${h.recipientName}</td></tr>` : ''}
+            ${h.recipientPhone ? `<tr><td>Phone</td><td>${h.recipientPhone}</td></tr>` : ''}
+            ${h.desc ? `<tr><td>Details</td><td>${h.desc}</td></tr>` : ''}
+            <tr><td>Date</td><td>${h.date||'-'}</td></tr>
+        </table>
+        <br><button onclick="window.print()">🖨️ Print</button>
+        </body></html>`);
+        win.document.close();
+        win.focus();
+    }
+
+    function shareOwnHistory() {
+        let history = chairmanData.history || [];
+        let totalDeposit = history.filter(h => h.type === 'Deposit').reduce((a,b) => a + (b.amount||0), 0);
+        let totalTransfer = history.filter(h => h.type === 'Transfer').reduce((a,b) => a + Math.abs(b.amount||0), 0);
+        let totalExpense = history.filter(h => h.type === 'Expense').reduce((a,b) => a + Math.abs(b.amount||0), 0);
+
+        let msg = '🤲 AKHOWAAT WELFARE FOUNDATION\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '👑 Chairman - Full History Report\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '💰 Current Balance: PKR ' + (chairmanData.balance || 0).toLocaleString() + '\n';
+        msg += '📥 Total Deposits: PKR ' + totalDeposit.toLocaleString() + '\n';
+        msg += '📤 Total Transfers: PKR ' + totalTransfer.toLocaleString() + '\n';
+        msg += '📝 Total Expenses: PKR ' + totalExpense.toLocaleString() + '\n';
+        msg += '━━━━━━━━━━━━━━━━━━━\n';
+        msg += '📜 TRANSACTIONS:\n\n';
+        for (let h of history.slice(0, 50)) {
+            msg += '🔖 ' + h.type + '\n';
+            msg += '   💵 PKR ' + Math.abs(h.amount||0).toLocaleString() + '\n';
+            if (h.desc) msg += '   📝 ' + h.desc + '\n';
+            msg += '   🕐 ' + h.date + '\n\n';
+        }
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    }
+
     function shareReport() {
         if (currentUser === 'chairman') {
-            // Chairman's own transactions share
-            let history = chairmanData.history || [];
-            let totalDeposit = history.filter(h => h.type === 'Deposit').reduce((a,b) => a + (b.amount||0), 0);
-            let totalTransfer = history.filter(h => h.type === 'Transfer').reduce((a,b) => a + Math.abs(b.amount||0), 0);
-            let totalExpense = history.filter(h => h.type === 'Expense').reduce((a,b) => a + Math.abs(b.amount||0), 0);
-
-            let msg = '🤲 AKHOWAAT WELFARE FOUNDATION\n';
-            msg += '━━━━━━━━━━━━━━━━━━━\n';
-            msg += '👑 Chairman - Report\n';
-            msg += '━━━━━━━━━━━━━━━━━━━\n';
-            msg += '💰 Balance: PKR ' + (chairmanData.balance || 0).toLocaleString() + '\n';
-            msg += '📥 Total Deposits: PKR ' + totalDeposit.toLocaleString() + '\n';
-            msg += '📤 Total Transfers: PKR ' + totalTransfer.toLocaleString() + '\n';
-            msg += '📝 Total Expenses: PKR ' + totalExpense.toLocaleString() + '\n';
-            window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+            shareOwnHistory();
         } else {
-            // Council share
             shareCouncilReport(currentCouncil);
         }
     }
@@ -1103,41 +1157,41 @@
         openModal('changePasswordModal');
         window.passwordCallback = async function(p) {
             credentials.chairman = p; await saveCredentials();
-            closeModal('changePasswordModal'); showAlert('Password change ho gaya!', 'success');
+            closeModal('changePasswordModal'); showAlert('Password changed successfully!', 'success');
         };
     }
     async function councilChangePassword() {
         openModal('changePasswordModal');
         window.passwordCallback = async function(p) {
             credentials[currentCouncil] = p; await saveCredentials();
-            closeModal('changePasswordModal'); showAlert('Password change ho gaya!', 'success');
+            closeModal('changePasswordModal'); showAlert('Password changed successfully!', 'success');
         };
     }
     async function chairmanClearHistory() {
-        if (confirm('History clear karein? Balance rahega.')) {
-            chairmanData.history = []; await saveChairman(); updateChairmanUI(); showAlert('History clear ho gayi!', 'success');
+        if (confirm('Clear history? Balance will remain.')) {
+            chairmanData.history = []; await saveChairman(); updateChairmanUI(); showAlert('History cleared!', 'success');
         }
     }
     async function councilClearHistory() {
-        if (confirm('History clear karein? Balance rahega.')) {
-            councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); showAlert('History clear ho gayi!', 'success');
+        if (confirm('Clear history? Balance will remain.')) {
+            councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); showAlert('History cleared!', 'success');
         }
     }
     async function chairmanResetWallet() {
-        if (confirm('POORA RESET! Sab data delete ho jayega!')) {
-            chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); showAlert('Wallet reset ho gaya!', 'success');
+        if (confirm('FULL RESET! All data will be deleted!')) {
+            chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); showAlert('Wallet reset done!', 'success');
         }
     }
     async function councilResetWallet() {
-        if (confirm('POORA RESET! Sab data delete ho jayega!')) {
-            councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); showAlert('Wallet reset ho gaya!', 'success');
+        if (confirm('FULL RESET! All data will be deleted!')) {
+            councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); showAlert('Wallet reset done!', 'success');
         }
     }
     function savePassword() {
         let np = document.getElementById('newPassword').value;
         let cp = document.getElementById('confirmPassword').value;
-        if (!np) { showAlert('Password enter karein', 'danger'); return; }
-        if (np !== cp) { showAlert('Passwords match nahi kar rahe', 'danger'); return; }
+        if (!np) { showAlert('Please enter a password', 'danger'); return; }
+        if (np !== cp) { showAlert('Passwords do not match', 'danger'); return; }
         if (window.passwordCallback) { window.passwordCallback(np); window.passwordCallback = null; }
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
@@ -1170,7 +1224,7 @@
             document.getElementById('password').value = '';
         } else {
             err.style.display = 'block';
-            err.innerHTML = '❌ Galat password! Dobara try karein.';
+            err.innerHTML = '❌ Incorrect password! Please try again.';
             setTimeout(() => err.style.display = 'none', 3000);
         }
     }
@@ -1206,6 +1260,7 @@
 
     document.getElementById('councilShareBtn').onclick = shareReport;
     document.getElementById('councilPrintBtn').onclick = printCouncilSelf;
+    document.getElementById('ownShareBtn').onclick = shareOwnHistory;
 
     document.getElementById('openFilterBtn').onclick = openFilterModal;
     document.getElementById('closeFilterBtn').onclick = closeFilterModal;
