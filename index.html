@@ -19,7 +19,6 @@
             min-height: 100vh;
         }
         
-        /* Login Page */
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -75,14 +74,12 @@
             color: #888;
         }
         
-        /* Dashboard */
         .dashboard {
             display: none;
             min-height: 100vh;
             background: #f5f7fa;
         }
         
-        /* Navbar */
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -90,7 +87,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
         }
         .council-navbar {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -105,14 +101,12 @@
             cursor: pointer;
         }
         
-        /* Container */
         .container {
             max-width: 500px;
             margin: 0 auto;
             padding: 20px;
         }
         
-        /* Balance Card */
         .balance-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -130,7 +124,6 @@
             margin-top: 10px;
         }
         
-        /* Stats Row */
         .stats-row {
             display: flex;
             gap: 10px;
@@ -155,7 +148,6 @@
             margin-top: 5px;
         }
         
-        /* Action Buttons */
         .action-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -168,7 +160,6 @@
             border-radius: 15px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: transform 0.2s;
         }
         .action-btn:active {
@@ -184,7 +175,6 @@
             color: #555;
         }
         
-        /* History */
         .history-card {
             background: white;
             border-radius: 15px;
@@ -204,9 +194,8 @@
         .history-header button {
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 5px;
         }
         .history-list {
             max-height: 400px;
@@ -256,7 +245,6 @@
             color: #999;
         }
         
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -310,12 +298,7 @@
             background: #e0e0e0;
             color: #333;
         }
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
         
-        /* Alert */
         .alert {
             position: fixed;
             bottom: 20px;
@@ -441,14 +424,13 @@
 </div>
 
 <!-- MODALS -->
-<div id="depositModal" class="modal"><div class="modal-content"><h3>💰 Deposit Money</h3><input type="number" id="depositAmount" placeholder="Amount (PKR)"><input type="text" id="depositDesc" placeholder="Description"><div class="modal-buttons"><button class="btn-primary" id="depositActionBtn">Deposit</button><button class="btn-secondary" id="closeDepositBtn">Cancel</button></div></div></div>
-<div id="transferModal" class="modal"><div class="modal-content"><h3>🔄 Transfer to Council</h3><select id="transferCouncilSelect"><option value="council1">Council 1</option><option value="council2">Council 2</option><option value="council3">Council 3</option><option value="council4">Council 4</option></select><input type="number" id="transferAmount" placeholder="Amount (PKR)"><input type="text" id="transferDesc" placeholder="Purpose"><div class="modal-buttons"><button class="btn-primary" id="transferActionBtn">Transfer</button><button class="btn-secondary" id="closeTransferBtn">Cancel</button></div></div></div>
-<div id="expenseModal" class="modal"><div class="modal-content"><h3>📝 Add Expense</h3><input type="text" id="expenseCategory" placeholder="Category"><input type="number" id="expenseAmount" placeholder="Amount (PKR)"><input type="text" id="expenseDesc" placeholder="Details"><div class="modal-buttons"><button class="btn-primary" id="expenseActionBtn">Add</button><button class="btn-secondary" id="closeExpenseBtn">Cancel</button></div></div></div>
-<div id="distributionModal" class="modal"><div class="modal-content"><h3>🤝 Distribute Aid</h3><input type="number" id="familiesCount" placeholder="Number of families"><input type="number" id="amountPerFamily" placeholder="Amount per family (PKR)"><input type="text" id="distributionDesc" placeholder="Reason"><div class="modal-buttons"><button class="btn-primary" id="distributeActionBtn">Distribute</button><button class="btn-secondary" id="closeDistributionBtn">Cancel</button></div></div></div>
-<div id="chairmanSettingsModal" class="modal"><div class="modal-content"><h3>⚙️ Settings</h3><div class="setting-item" style="border:none; padding:0 0 10px 0;" id="chairmanChangeName"><span>📝 Change Name</span><span>→</span></div><div class="setting-item" style="border:none; padding:10px 0;" id="chairmanChangePass"><span>🔐 Change Password</span><span>→</span></div><div class="setting-item" style="border:none; padding:10px 0;" id="chairmanClearHistory"><span>🗑️ Clear History</span><span>→</span></div><div class="setting-item" style="border:none; padding:10px 0;" id="chairmanResetWallet"><span>💣 Reset Wallet</span><span>→</span></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettingsBtn">Close</button></div></div></div>
-<div id="councilSettingsModal" class="modal"><div class="modal-content"><h3>⚙️ Council Settings</h3><div class="setting-item" style="border:none; padding:0 0 10px 0;" id="councilChangeName"><span>📝 Change Name</span><span>→</span></div><div class="setting-item" style="border:none; padding:10px 0;" id="councilChangePass"><span>🔐 Change Password</span><span>→</span></div><div class="setting-item" style="border:none; padding:10px 0;" id="councilClearHistory"><span>🗑️ Clear History</span><span>→</span></div><div class="setting-item" style="border:none; padding:10px 0;" id="councilResetWallet"><span>💣 Reset Wallet</span><span>→</span></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettingsBtn">Close</button></div></div></div>
-<div id="changeNameModal" class="modal"><div class="modal-content"><h3>📝 Change Name</h3><input type="text" id="newName" placeholder="New name"><div class="modal-buttons"><button class="btn-primary" id="saveNameBtn">Save</button><button class="btn-secondary" id="closeNameModalBtn">Cancel</button></div></div></div>
-<div id="changePasswordModal" class="modal"><div class="modal-content"><h3>🔐 Change Password</h3><input type="password" id="newPassword" placeholder="New password"><input type="password" id="confirmPassword" placeholder="Confirm password"><div class="modal-buttons"><button class="btn-primary" id="savePasswordBtn">Save</button><button class="btn-secondary" id="closePasswordModalBtn">Cancel</button></div></div></div>
+<div id="depositModal" class="modal"><div class="modal-content"><h3>💰 Deposit Money</h3><input type="number" id="depositAmount" placeholder="Amount (PKR)"><input type="text" id="depositDesc" placeholder="Description"><div class="modal-buttons"><button class="btn-primary" id="depositBtn">Deposit</button><button class="btn-secondary" id="closeDeposit">Cancel</button></div></div></div>
+<div id="transferModal" class="modal"><div class="modal-content"><h3>🔄 Transfer to Council</h3><select id="transferCouncil"><option value="council1">Council 1</option><option value="council2">Council 2</option><option value="council3">Council 3</option><option value="council4">Council 4</option></select><input type="number" id="transferAmount" placeholder="Amount (PKR)"><input type="text" id="transferDesc" placeholder="Purpose"><div class="modal-buttons"><button class="btn-primary" id="transferBtn">Transfer</button><button class="btn-secondary" id="closeTransfer">Cancel</button></div></div></div>
+<div id="expenseModal" class="modal"><div class="modal-content"><h3>📝 Add Expense</h3><input type="text" id="expenseCategory" placeholder="Category"><input type="number" id="expenseAmount" placeholder="Amount (PKR)"><input type="text" id="expenseDesc" placeholder="Details"><div class="modal-buttons"><button class="btn-primary" id="expenseBtn">Add</button><button class="btn-secondary" id="closeExpense">Cancel</button></div></div></div>
+<div id="distributionModal" class="modal"><div class="modal-content"><h3>🤝 Distribute Aid</h3><input type="number" id="familiesCount" placeholder="Number of families"><input type="number" id="amountPerFamily" placeholder="Amount per family (PKR)"><input type="text" id="distributionDesc" placeholder="Reason"><div class="modal-buttons"><button class="btn-primary" id="distributeBtn">Distribute</button><button class="btn-secondary" id="closeDistribution">Cancel</button></div></div></div>
+<div id="chairmanSettingsModal" class="modal"><div class="modal-content"><h3>⚙️ Chairman Settings</h3><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 Change Password</button></div><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanClearHistoryBtn">🗑️ Clear History</button></div><div style="padding:10px 0;"><button class="btn-danger" style="width:100%; background:#ef4444;" id="chairmanResetWalletBtn">💣 Reset Wallet</button></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettings">Close</button></div></div></div>
+<div id="councilSettingsModal" class="modal"><div class="modal-content"><h3>⚙️ Council Settings</h3><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 Change Password</button></div><div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilClearHistoryBtn">🗑️ Clear History</button></div><div style="padding:10px 0;"><button class="btn-danger" style="width:100%; background:#ef4444;" id="councilResetWalletBtn">💣 Reset Wallet</button></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettings">Close</button></div></div></div>
+<div id="changePasswordModal" class="modal"><div class="modal-content"><h3>🔐 Change Password</h3><input type="password" id="newPassword" placeholder="New password"><input type="password" id="confirmPassword" placeholder="Confirm password"><div class="modal-buttons"><button class="btn-primary" id="savePasswordBtn">Save</button><button class="btn-secondary" id="closePasswordModal">Cancel</button></div></div></div>
 <div id="alertBox" class="alert"></div>
 
 <script>
@@ -464,14 +446,12 @@
         measurementId: "G-5FBCME0PT8"
     };
     
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     
     let currentUser = null;
     let currentCouncil = null;
     
-    // Data
     let displayNames = { chairman: 'Chairman', council1: 'Council 1', council2: 'Council 2', council3: 'Council 3', council4: 'Council 4' };
     let chairmanData = { balance: 50000, history: [{ date: new Date().toLocaleString(), type: 'Initial', amount: 50000, desc: 'Starting balance' }] };
     let councilsData = { council1: { balance: 0, history: [] }, council2: { balance: 0, history: [] }, council3: { balance: 0, history: [] }, council4: { balance: 0, history: [] } };
@@ -480,20 +460,20 @@
     // ========== FIREBASE FUNCTIONS ==========
     async function loadFromFirebase() {
         try {
-            const chairmanSnap = await database.ref('chairmanData').get();
-            if(chairmanSnap.exists()) chairmanData = chairmanSnap.val();
+            const cs = await database.ref('chairmanData').get();
+            if(cs.exists()) chairmanData = cs.val();
             else database.ref('chairmanData').set(chairmanData);
             
-            const councilsSnap = await database.ref('councilsData').get();
-            if(councilsSnap.exists()) councilsData = councilsSnap.val();
+            const cns = await database.ref('councilsData').get();
+            if(cns.exists()) councilsData = cns.val();
             else database.ref('councilsData').set(councilsData);
             
-            const namesSnap = await database.ref('displayNames').get();
-            if(namesSnap.exists()) displayNames = namesSnap.val();
+            const ns = await database.ref('displayNames').get();
+            if(ns.exists()) displayNames = ns.val();
             else database.ref('displayNames').set(displayNames);
             
-            const credsSnap = await database.ref('credentials').get();
-            if(credsSnap.exists()) credentials = credsSnap.val();
+            const crs = await database.ref('credentials').get();
+            if(crs.exists()) credentials = crs.val();
             else database.ref('credentials').set(credentials);
             
             document.getElementById('syncStatus').innerHTML = '✅ Live Sync';
@@ -502,8 +482,7 @@
             if(currentUser === 'chairman') updateChairmanUI();
             else if(currentCouncil) updateCouncilUI();
         } catch(e) {
-            console.log("Firebase error:", e);
-            document.getElementById('syncStatus').innerHTML = '⚠️ Offline Mode';
+            document.getElementById('syncStatus').innerHTML = '⚠️ Offline';
             document.getElementById('syncStatus').style.background = '#ef4444';
         }
     }
@@ -514,15 +493,8 @@
     async function saveCredentials() { await database.ref('credentials').set(credentials); }
     
     function setupRealtimeListeners() {
-        database.ref('chairmanData').on('value', (snap) => {
-            if(snap.exists()) { chairmanData = snap.val(); if(currentUser === 'chairman') updateChairmanUI(); }
-        });
-        database.ref('councilsData').on('value', (snap) => {
-            if(snap.exists()) { councilsData = snap.val(); if(currentUser === 'chairman') updateChairmanUI(); else if(currentCouncil) updateCouncilUI(); }
-        });
-        database.ref('displayNames').on('value', (snap) => {
-            if(snap.exists()) { displayNames = snap.val(); if(currentCouncil) document.getElementById('councilName').innerText = displayNames[currentCouncil]; }
-        });
+        database.ref('chairmanData').on('value', (s) => { if(s.exists()) { chairmanData = s.val(); if(currentUser === 'chairman') updateChairmanUI(); } });
+        database.ref('councilsData').on('value', (s) => { if(s.exists()) { councilsData = s.val(); if(currentUser === 'chairman') updateChairmanUI(); else if(currentCouncil) updateCouncilUI(); } });
     }
     
     function showAlert(msg, type) {
@@ -589,141 +561,250 @@
         document.getElementById('councilHistory').innerHTML = html;
     }
     
-    // ========== ACTIONS ==========
+    // ========== DEPOSIT FUNCTION ==========
     async function deposit() {
-        let a = parseFloat(document.getElementById('depositAmount').value);
-        let d = document.getElementById('depositDesc').value || 'Manual deposit';
-        if(isNaN(a) || a <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        chairmanData.balance = (chairmanData.balance || 0) + a;
-        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Deposit', amount: a, desc: d });
+        let amount = parseFloat(document.getElementById('depositAmount').value);
+        let desc = document.getElementById('depositDesc').value || 'Manual deposit';
+        
+        if(isNaN(amount) || amount <= 0) {
+            showAlert('Enter valid amount', 'danger');
+            return;
+        }
+        
+        chairmanData.balance = (chairmanData.balance || 0) + amount;
+        chairmanData.history.unshift({
+            date: new Date().toLocaleString(),
+            type: 'Deposit',
+            amount: amount,
+            desc: desc
+        });
+        
         await saveChairman();
         updateChairmanUI();
-        document.getElementById('closeDepositBtn').click();
+        closeModal('depositModal');
         document.getElementById('depositAmount').value = '';
         document.getElementById('depositDesc').value = '';
-        showAlert('PKR ' + a.toLocaleString() + ' deposited!', 'success');
+        showAlert('PKR ' + amount.toLocaleString() + ' deposited!', 'success');
     }
     
+    // ========== TRANSFER FUNCTION ==========
     async function transfer() {
-        let c = document.getElementById('transferCouncilSelect').value;
-        let a = parseFloat(document.getElementById('transferAmount').value);
-        let d = document.getElementById('transferDesc').value || 'Fund transfer';
-        if(isNaN(a) || a <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        if(a > (chairmanData.balance || 0)) { showAlert('Insufficient balance!', 'danger'); return; }
+        let council = document.getElementById('transferCouncil').value;
+        let amount = parseFloat(document.getElementById('transferAmount').value);
+        let desc = document.getElementById('transferDesc').value || 'Fund transfer';
         
-        chairmanData.balance = (chairmanData.balance || 0) - a;
-        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Transfer', amount: a, desc: `To ${c}: ${d}` });
+        if(isNaN(amount) || amount <= 0) {
+            showAlert('Enter valid amount', 'danger');
+            return;
+        }
         
-        if (!councilsData[c]) councilsData[c] = { balance: 0, history: [] };
-        councilsData[c].balance = (councilsData[c].balance || 0) + a;
-        councilsData[c].history.unshift({ date: new Date().toLocaleString(), type: 'Received', amount: a, desc: `Received from Chairman: ${d}` });
+        if(amount > (chairmanData.balance || 0)) {
+            showAlert('Insufficient balance! Current: PKR ' + (chairmanData.balance || 0).toLocaleString(), 'danger');
+            return;
+        }
+        
+        // Deduct from chairman
+        chairmanData.balance = (chairmanData.balance || 0) - amount;
+        chairmanData.history.unshift({
+            date: new Date().toLocaleString(),
+            type: 'Transfer',
+            amount: amount,
+            desc: 'To ' + council + ': ' + desc
+        });
+        
+        // Add to council
+        if (!councilsData[council]) councilsData[council] = { balance: 0, history: [] };
+        councilsData[council].balance = (councilsData[council].balance || 0) + amount;
+        councilsData[council].history.unshift({
+            date: new Date().toLocaleString(),
+            type: 'Received',
+            amount: amount,
+            desc: 'Received from Chairman: ' + desc
+        });
         
         await saveChairman();
         await saveCouncils();
         updateChairmanUI();
-        if(currentCouncil === c) updateCouncilUI();
-        document.getElementById('closeTransferBtn').click();
+        if(currentCouncil === council) updateCouncilUI();
+        
+        closeModal('transferModal');
         document.getElementById('transferAmount').value = '';
         document.getElementById('transferDesc').value = '';
-        showAlert('PKR ' + a.toLocaleString() + ' transferred!', 'success');
+        showAlert('PKR ' + amount.toLocaleString() + ' transferred to ' + council + '!', 'success');
     }
     
+    // ========== EXPENSE FUNCTION ==========
     async function addExpense() {
-        let cat = document.getElementById('expenseCategory').value;
-        let a = parseFloat(document.getElementById('expenseAmount').value);
-        let d = document.getElementById('expenseDesc').value || '';
-        if(!cat) { showAlert('Enter category', 'danger'); return; }
-        if(isNaN(a) || a <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        if(a > (chairmanData.balance || 0)) { showAlert('Insufficient balance!', 'danger'); return; }
+        let category = document.getElementById('expenseCategory').value;
+        let amount = parseFloat(document.getElementById('expenseAmount').value);
+        let desc = document.getElementById('expenseDesc').value || '';
         
-        chairmanData.balance = (chairmanData.balance || 0) - a;
-        chairmanData.history.unshift({ date: new Date().toLocaleString(), type: 'Expense', amount: a, desc: `${cat}: ${d}` });
+        if(!category) {
+            showAlert('Enter category', 'danger');
+            return;
+        }
+        if(isNaN(amount) || amount <= 0) {
+            showAlert('Enter valid amount', 'danger');
+            return;
+        }
+        if(amount > (chairmanData.balance || 0)) {
+            showAlert('Insufficient balance!', 'danger');
+            return;
+        }
+        
+        chairmanData.balance = (chairmanData.balance || 0) - amount;
+        chairmanData.history.unshift({
+            date: new Date().toLocaleString(),
+            type: 'Expense',
+            amount: amount,
+            desc: category + ': ' + desc
+        });
+        
         await saveChairman();
         updateChairmanUI();
-        document.getElementById('closeExpenseBtn').click();
+        closeModal('expenseModal');
         document.getElementById('expenseCategory').value = '';
         document.getElementById('expenseAmount').value = '';
         document.getElementById('expenseDesc').value = '';
-        showAlert('Expense added!', 'success');
+        showAlert('Expense added: PKR ' + amount.toLocaleString(), 'success');
     }
     
+    // ========== DISTRIBUTE FUNCTION ==========
     async function distribute() {
-        let f = parseInt(document.getElementById('familiesCount').value);
-        let pf = parseFloat(document.getElementById('amountPerFamily').value);
-        let d = document.getElementById('distributionDesc').value || 'Aid distribution';
-        let t = f * pf;
-        if(isNaN(f) || f <= 0) { showAlert('Enter valid families', 'danger'); return; }
-        if(isNaN(pf) || pf <= 0) { showAlert('Enter valid amount', 'danger'); return; }
-        if(t > (councilsData[currentCouncil]?.balance || 0)) { showAlert('Insufficient balance!', 'danger'); return; }
+        let families = parseInt(document.getElementById('familiesCount').value);
+        let perFamily = parseFloat(document.getElementById('amountPerFamily').value);
+        let desc = document.getElementById('distributionDesc').value || 'Aid distribution';
+        let total = families * perFamily;
+        
+        if(isNaN(families) || families <= 0) {
+            showAlert('Enter valid number of families', 'danger');
+            return;
+        }
+        if(isNaN(perFamily) || perFamily <= 0) {
+            showAlert('Enter valid amount per family', 'danger');
+            return;
+        }
+        if(total > (councilsData[currentCouncil]?.balance || 0)) {
+            showAlert('Insufficient balance in council wallet!', 'danger');
+            return;
+        }
         
         if (!councilsData[currentCouncil]) councilsData[currentCouncil] = { balance: 0, history: [] };
-        councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - t;
-        councilsData[currentCouncil].history.unshift({ date: new Date().toLocaleString(), type: 'Distribution', amount: t, families: f, desc: d + ` (PKR ${pf}/family)` });
+        councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - total;
+        councilsData[currentCouncil].history.unshift({
+            date: new Date().toLocaleString(),
+            type: 'Distribution',
+            amount: total,
+            families: families,
+            desc: desc + ' (PKR ' + perFamily + '/family)'
+        });
+        
         await saveCouncils();
         updateCouncilUI();
-        document.getElementById('closeDistributionBtn').click();
+        closeModal('distributionModal');
         document.getElementById('familiesCount').value = '';
         document.getElementById('amountPerFamily').value = '';
         document.getElementById('distributionDesc').value = '';
-        showAlert('PKR ' + t.toLocaleString() + ' distributed!', 'success');
+        showAlert('PKR ' + total.toLocaleString() + ' distributed to ' + families + ' families!', 'success');
     }
     
-    // ========== SETTINGS ==========
+    // ========== SETTINGS FUNCTIONS ==========
     function openChairmanSettings() { openModal('chairmanSettingsModal'); }
     function openCouncilSettings() { openModal('councilSettingsModal'); }
     
-    async function changeName() {
-        let n = document.getElementById('newName').value;
-        if(!n) { showAlert('Enter name', 'danger'); return; }
-        if(currentUser === 'chairman') displayNames.chairman = n;
-        else { displayNames[currentCouncil] = n; document.getElementById('councilName').innerText = n; }
-        await saveDisplayNames();
-        showAlert('Name changed!', 'success');
-        closeModal('changeNameModal');
+    async function chairmanChangePassword() {
+        openModal('changePasswordModal');
+        window.passwordCallback = async function(newPass) {
+            credentials.chairman = newPass;
+            await saveCredentials();
+            closeModal('changePasswordModal');
+            showAlert('Password changed successfully!', 'success');
+        };
     }
     
-    async function changePassword() {
-        let np = document.getElementById('newPassword').value;
-        let cp = document.getElementById('confirmPassword').value;
-        if(!np) { showAlert('Enter password', 'danger'); return; }
-        if(np !== cp) { showAlert('Passwords mismatch', 'danger'); return; }
-        if(currentUser === 'chairman') credentials.chairman = np;
-        else credentials[currentCouncil] = np;
-        await saveCredentials();
-        showAlert('Password changed!', 'success');
-        closeModal('changePasswordModal');
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmPassword').value = '';
+    async function councilChangePassword() {
+        openModal('changePasswordModal');
+        window.passwordCallback = async function(newPass) {
+            credentials[currentCouncil] = newPass;
+            await saveCredentials();
+            closeModal('changePasswordModal');
+            showAlert('Password changed successfully!', 'success');
+        };
     }
     
-    async function clearHistory() {
-        if(confirm('Clear history? Balance remains.')) {
-            if(currentUser === 'chairman') { chairmanData.history = []; await saveChairman(); updateChairmanUI(); }
-            else { councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); }
+    async function chairmanClearHistory() {
+        if(confirm('Clear all history? Balance will remain.')) {
+            chairmanData.history = [];
+            await saveChairman();
+            updateChairmanUI();
             showAlert('History cleared!', 'success');
         }
     }
     
-    async function resetWallet() {
-        if(confirm('FULL RESET! Cannot undo!')) {
-            if(currentUser === 'chairman') { chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); }
-            else { councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); }
+    async function councilClearHistory() {
+        if(confirm('Clear all history? Balance will remain.')) {
+            councilsData[currentCouncil].history = [];
+            await saveCouncils();
+            updateCouncilUI();
+            showAlert('History cleared!', 'success');
+        }
+    }
+    
+    async function chairmanResetWallet() {
+        if(confirm('FULL RESET! All data will be lost! Cannot undo!')) {
+            chairmanData = { balance: 0, history: [] };
+            await saveChairman();
+            updateChairmanUI();
             showAlert('Wallet reset!', 'warning');
         }
     }
     
+    async function councilResetWallet() {
+        if(confirm('FULL RESET! All data will be lost! Cannot undo!')) {
+            councilsData[currentCouncil] = { balance: 0, history: [] };
+            await saveCouncils();
+            updateCouncilUI();
+            showAlert('Wallet reset!', 'warning');
+        }
+    }
+    
+    function savePassword() {
+        let newPass = document.getElementById('newPassword').value;
+        let confirmPass = document.getElementById('confirmPassword').value;
+        
+        if(!newPass) {
+            showAlert('Enter a password', 'danger');
+            return;
+        }
+        if(newPass !== confirmPass) {
+            showAlert('Passwords do not match', 'danger');
+            return;
+        }
+        
+        if(window.passwordCallback) {
+            window.passwordCallback(newPass);
+            window.passwordCallback = null;
+        }
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+    }
+    
     function shareReport() {
-        let msg = currentUser === 'chairman' ? `Akhowaat - Chairman\n💰 Balance: PKR ${(chairmanData.balance || 0).toLocaleString()}` : `Akhowaat - ${displayNames[currentCouncil]}\n💰 Balance: PKR ${(councilsData[currentCouncil]?.balance || 0).toLocaleString()}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        let msg = currentUser === 'chairman' ? 
+            'Akhowaat Foundation - Chairman Report\n💰 Balance: PKR ' + (chairmanData.balance || 0).toLocaleString() :
+            'Akhowaat Foundation - ' + displayNames[currentCouncil] + '\n💰 Balance: PKR ' + (councilsData[currentCouncil]?.balance || 0).toLocaleString();
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     }
     
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
+    // ========== LOGIN/LOGOUT ==========
     async function login() {
         let role = document.getElementById('roleSelect').value;
         let pwd = document.getElementById('password').value;
         let err = document.getElementById('loginError');
+        
         if(credentials[role] === pwd) {
             currentUser = role;
             if(role === 'chairman') {
@@ -764,41 +845,37 @@
     document.getElementById('openChairmanSettings').onclick = openChairmanSettings;
     document.getElementById('openCouncilSettings').onclick = openCouncilSettings;
     
-    document.getElementById('depositActionBtn').onclick = deposit;
-    document.getElementById('closeDepositBtn').onclick = () => closeModal('depositModal');
-    document.getElementById('transferActionBtn').onclick = transfer;
-    document.getElementById('closeTransferBtn').onclick = () => closeModal('transferModal');
-    document.getElementById('expenseActionBtn').onclick = addExpense;
-    document.getElementById('closeExpenseBtn').onclick = () => closeModal('expenseModal');
-    document.getElementById('distributeActionBtn').onclick = distribute;
-    document.getElementById('closeDistributionBtn').onclick = () => closeModal('distributionModal');
+    document.getElementById('depositBtn').onclick = deposit;
+    document.getElementById('closeDeposit').onclick = () => closeModal('depositModal');
+    document.getElementById('transferBtn').onclick = transfer;
+    document.getElementById('closeTransfer').onclick = () => closeModal('transferModal');
+    document.getElementById('expenseBtn').onclick = addExpense;
+    document.getElementById('closeExpense').onclick = () => closeModal('expenseModal');
+    document.getElementById('distributeBtn').onclick = distribute;
+    document.getElementById('closeDistribution').onclick = () => closeModal('distributionModal');
     
     document.getElementById('shareBtn').onclick = shareReport;
     document.getElementById('councilShareBtn').onclick = shareReport;
     
-    document.getElementById('chairmanChangeName').onclick = () => openModal('changeNameModal');
-    document.getElementById('chairmanChangePass').onclick = () => openModal('changePasswordModal');
-    document.getElementById('chairmanClearHistory').onclick = clearHistory;
-    document.getElementById('chairmanResetWallet').onclick = resetWallet;
-    document.getElementById('closeChairmanSettingsBtn').onclick = () => closeModal('chairmanSettingsModal');
+    document.getElementById('chairmanChangePassword').onclick = chairmanChangePassword;
+    document.getElementById('chairmanClearHistoryBtn').onclick = chairmanClearHistory;
+    document.getElementById('chairmanResetWalletBtn').onclick = chairmanResetWallet;
+    document.getElementById('closeChairmanSettings').onclick = () => closeModal('chairmanSettingsModal');
     
-    document.getElementById('councilChangeName').onclick = () => openModal('changeNameModal');
-    document.getElementById('councilChangePass').onclick = () => openModal('changePasswordModal');
-    document.getElementById('councilClearHistory').onclick = clearHistory;
-    document.getElementById('councilResetWallet').onclick = resetWallet;
-    document.getElementById('closeCouncilSettingsBtn').onclick = () => closeModal('councilSettingsModal');
+    document.getElementById('councilChangePassword').onclick = councilChangePassword;
+    document.getElementById('councilClearHistoryBtn').onclick = councilClearHistory;
+    document.getElementById('councilResetWalletBtn').onclick = councilResetWallet;
+    document.getElementById('closeCouncilSettings').onclick = () => closeModal('councilSettingsModal');
     
-    document.getElementById('saveNameBtn').onclick = changeName;
-    document.getElementById('closeNameModalBtn').onclick = () => closeModal('changeNameModal');
-    document.getElementById('savePasswordBtn').onclick = changePassword;
-    document.getElementById('closePasswordModalBtn').onclick = () => closeModal('changePasswordModal');
+    document.getElementById('savePasswordBtn').onclick = savePassword;
+    document.getElementById('closePasswordModal').onclick = () => closeModal('changePasswordModal');
     
     document.getElementById('password').addEventListener('keypress', (e) => { if(e.key === 'Enter') login(); });
     
     // ========== INITIALIZE ==========
     loadFromFirebase();
     setupRealtimeListeners();
-    console.log("Firebase Live Sync Active! All devices will share same data!");
+    console.log("Firebase Live Sync Active!");
 </script>
 </body>
 </html>
