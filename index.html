@@ -709,7 +709,7 @@
                 <div class="transaction-amount ${isPos ? 'amount-positive' : 'amount-negative'}">
                     ${isPos ? '+' : '-'} PKR ${Math.abs(amount).toLocaleString()}
                 </div>
-                <button onclick='shareSingleTxn(${JSON.stringify(txnData || {type,date,desc,amount})})' style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;" title="Share">📤</button>
+                <button onclick='shareSingleTxn(${JSON.stringify(txnData || {type,date,desc,amount})})' style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;" title="Share">📱</button>
                 <button onclick='printSingleTxn(${JSON.stringify(txnData || {type,date,desc,amount})})' style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;" title="Print">🖨️</button>
             </div>
         </div>`;
