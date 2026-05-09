@@ -902,10 +902,10 @@
             let cName = displayNames[council] || council;
 
             chairmanData.balance = (chairmanData.balance || 0) - amount;
-            chairmanData.history.unshift({ date: now, type: 'Transfer', amount: -amount, desc: cName + ' ko: ' + desc });
+            chairmanData.history.unshift({ date: now, type: 'Transfer', amount: -amount, desc: cName + '  : ' + desc });
 
             councilsData[council].balance = (councilsData[council].balance || 0) + amount;
-            councilsData[council].history.unshift({ date: now, type: 'Received', amount, desc: 'Chairman se mila: ' + desc });
+            councilsData[council].history.unshift({ date: now, type: 'Received', amount, desc: 'From Chairman: ' + desc });
 
             await database.ref().update({ 'chairmanData': chairmanData, 'councilsData': councilsData });
             updateChairmanUI();
