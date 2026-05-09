@@ -283,10 +283,10 @@
         <div id="loginError" class="error-msg"></div>
         <select id="roleSelect">
             <option value="chairman">👑 Chairman</option>
-            <option value="council1">🌆 Council 1</option>
-            <option value="council2">🌆 Council 2</option>
-            <option value="council3">🌆 Council 3</option>
-            <option value="council4">🌆 Council 4</option>
+            <option value="council1">🏯 Council 1</option>
+            <option value="council2">🏯 Council 2</option>
+            <option value="council3">🏯 Council 3</option>
+            <option value="council4">🏯 Council 4</option>
         </select>
         <div class="password-wrapper">
             <input type="password" id="password" placeholder="Password">
@@ -349,7 +349,7 @@
             <div id="councilHistorySection" style="display:none;">
                 <div class="council-history-block" id="block-council1">
                     <div class="council-history-header">
-                        <h5 id="blockTitle-council1">🌆 Council 1</h5>
+                        <h5 id="blockTitle-council1">🏯 Council 1</h5>
                         <div class="council-history-btns">
                             <button class="share-btn" onclick="shareCouncilReport('council1')">📱 Share</button>
                             <button class="print-btn" onclick="printCouncilHistory('council1')">🖨️ Print</button>
@@ -359,7 +359,7 @@
                 </div>
                 <div class="council-history-block" id="block-council2">
                     <div class="council-history-header">
-                        <h5 id="blockTitle-council2">🌆 Council 2</h5>
+                        <h5 id="blockTitle-council2">🏯 Council 2</h5>
                         <div class="council-history-btns">
                             <button class="share-btn" onclick="shareCouncilReport('council2')">📱 Share</button>
                             <button class="print-btn" onclick="printCouncilHistory('council2')">🖨️ Print</button>
@@ -379,7 +379,7 @@
                 </div>
                 <div class="council-history-block" id="block-council4">
                     <div class="council-history-header">
-                        <h5 id="blockTitle-council4">🌆 Council 4</h5>
+                        <h5 id="blockTitle-council4">🏯 Council 4</h5>
                         <div class="council-history-btns">
                             <button class="share-btn" onclick="shareCouncilReport('council4')">📱 Share</button>
                             <button class="print-btn" onclick="printCouncilHistory('council4')">🖨️ Print</button>
@@ -708,7 +708,7 @@
             if (el) el.textContent = displayNames[c] || c;
             let bt = document.getElementById('blockTitle-' + c);
             if (bt) {
-                bt.textContent = '🌆 ' + (displayNames[c] || c);
+                bt.textContent = '🏯 ' + (displayNames[c] || c);
             }
             // Update reset button labels in chairman settings
             let chb = document.getElementById('clearHistBtn-' + c);
