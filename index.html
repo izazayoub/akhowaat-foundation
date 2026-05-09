@@ -52,11 +52,34 @@
             color: white; border: none; border-radius: 10px;
             font-size: 18px; font-weight: bold; cursor: pointer;
         }
+        /* Password input wrapper with show/hide toggle */
+        .password-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .password-wrapper input {
+            margin-bottom: 0 !important;
+            padding-right: 44px !important;
+        }
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            width: auto;
+            padding: 0;
+            color: #888;
+            line-height: 1;
+        }
         .error-msg {
             background: #ffebee; color: #c62828; padding: 10px;
             border-radius: 8px; margin-bottom: 15px; text-align: center; display: none;
         }
-        .dashboard { display: none; min-height: 100vh; background: #f5f7fa; }
+        .dashboard { display: none; min-height: 100vh; background: #f5f7fa; padding-bottom: 80px; }
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; padding: 15px 20px;
@@ -65,18 +88,28 @@
         .council-navbar { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
         .navbar h3 { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
         .navbar-right { display: flex; align-items: center; gap: 10px; }
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 8px;
+        /* Fixed floating logout button - bottom right */
+        .floating-logout {
+            position: fixed;
+            bottom: 24px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            font-size: 14px;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 4px 20px rgba(239,68,68,0.45);
+            z-index: 900;
+            border: none;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
-        .logout-icon { font-size: 16px; }
+        .floating-logout:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(239,68,68,0.35); }
+        .logout-icon { font-size: 18px; }
         .sync-badge {
             background: rgba(255,255,255,0.2);
             color: white;
@@ -192,6 +225,7 @@
         .modal-content {
             background: white; margin: 20px; padding: 25px;
             border-radius: 20px; width: 90%; max-width: 350px;
+            max-height: 90vh; overflow-y: auto;
         }
         .modal-content h3 { margin-bottom: 20px; color: #333; }
         .modal-content input, .modal-content select {
@@ -205,8 +239,21 @@
         }
         .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
         .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-danger { background: #ef4444; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; padding: 12px; }
+
+        /* Reset options grid inside settings */
+        .reset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .reset-grid button {
+            padding: 10px 6px; border: none; border-radius: 10px;
+            font-weight: 600; cursor: pointer; font-size: 12px;
+            background: #ffeaea; color: #c62828;
+            transition: background 0.15s;
+        }
+        .reset-grid button:hover { background: #ef4444; color: white; }
+        .reset-section-label { font-size: 12px; color: #888; margin-bottom: 6px; margin-top: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
         .alert {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            position: fixed; bottom: 80px; left: 20px; right: 20px;
             background: #333; color: white; padding: 12px;
             border-radius: 30px; text-align: center; font-size: 14px;
             z-index: 2000; display: none;
@@ -240,7 +287,10 @@
             <option value="council3">🌆 Council 3</option>
             <option value="council4">🌆 Council 4</option>
         </select>
-        <input type="password" id="password" placeholder="Password">
+        <div class="password-wrapper">
+            <input type="password" id="password" placeholder="Password">
+            <button type="button" class="pw-toggle" onclick="togglePw('password', this)">👁️</button>
+        </div>
         <button id="loginBtn">🔐 Login</button>
     </div>
 </div>
@@ -249,9 +299,7 @@
 <div id="chairmanDashboard" class="dashboard">
     <div class="navbar">
         <h3>👑 CHAIRMAN</h3>
-        <div class="navbar-right">
-            <div class="logout-btn" id="chairmanLogout"><span class="logout-icon">🚪</span> Logout</div>
-        </div>
+        <div class="navbar-right"></div>
     </div>
     <div class="container">
         <div class="balance-card">
@@ -344,13 +392,16 @@
     </div>
 </div>
 
+<!-- Floating Logout for Chairman -->
+<button class="floating-logout" id="chairmanLogout" style="display:none;">
+    <span class="logout-icon">🚪</span> Logout
+</button>
+
 <!-- COUNCIL DASHBOARD -->
 <div id="councilDashboard" class="dashboard">
     <div class="navbar council-navbar">
         <h3>🤝 <span id="councilName">Council</span></h3>
-        <div class="navbar-right">
-            <div class="logout-btn" id="councilLogout"><span class="logout-icon">🚪</span> Logout</div>
-        </div>
+        <div class="navbar-right"></div>
     </div>
     <div class="container">
         <div class="balance-card council-balance">
@@ -379,6 +430,11 @@
         </div>
     </div>
 </div>
+
+<!-- Floating Logout for Council -->
+<button class="floating-logout" id="councilLogout" style="display:none;">
+    <span class="logout-icon">🚪</span> Logout
+</button>
 
 <!-- Filter Modal (Chairman) -->
 <div id="filterModal" class="filter-modal">
@@ -464,26 +520,61 @@
 <!-- Chairman Settings Modal -->
 <div id="chairmanSettingsModal" class="modal"><div class="modal-content">
     <h3>⚙️ Chairman Settings</h3>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 Change Password</button></div>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="chairmanClearHistoryBtn">🗑️ Clear History</button></div>
-    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="chairmanResetWalletBtn">💣 Reset Wallet</button></div>
-    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeChairmanSettings">Close</button></div>
+    <div style="padding:10px 0;">
+        <button class="btn-primary" style="width:100%;" id="chairmanChangePassword">🔐 Change Password</button>
+    </div>
+
+    <!-- Reset History Section -->
+    <div class="reset-section-label">🗑️ Reset History</div>
+    <div class="reset-grid">
+        <button onclick="chairmanClearHistory()">🧹 My History</button>
+        <button onclick="clearCouncilHistory('council1')" id="clearHistBtn-council1">Council 1</button>
+        <button onclick="clearCouncilHistory('council2')" id="clearHistBtn-council2">Council 2</button>
+        <button onclick="clearCouncilHistory('council3')" id="clearHistBtn-council3">Council 3</button>
+        <button onclick="clearCouncilHistory('council4')" id="clearHistBtn-council4">Council 4</button>
+    </div>
+
+    <!-- Reset Wallet Section -->
+    <div class="reset-section-label">💣 Reset Wallet</div>
+    <div class="reset-grid">
+        <button onclick="chairmanResetWallet()">💣 My Wallet</button>
+        <button onclick="resetCouncilWallet('council1')" id="resetWalBtn-council1">Council 1</button>
+        <button onclick="resetCouncilWallet('council2')" id="resetWalBtn-council2">Council 2</button>
+        <button onclick="resetCouncilWallet('council3')" id="resetWalBtn-council3">Council 3</button>
+        <button onclick="resetCouncilWallet('council4')" id="resetWalBtn-council4">Council 4</button>
+    </div>
+
+    <div class="modal-buttons" style="margin-top:20px;">
+        <button class="btn-secondary" id="closeChairmanSettings">Close</button>
+    </div>
 </div></div>
 
-<!-- Council Settings Modal -->
+<!-- Council Settings Modal (no reset buttons) -->
 <div id="councilSettingsModal" class="modal"><div class="modal-content">
     <h3>⚙️ Council Settings</h3>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 Change Password</button></div>
-    <div style="padding:10px 0;"><button class="btn-primary" style="width:100%;" id="councilClearHistoryBtn">🗑️ Clear History</button></div>
-    <div style="padding:10px 0;"><button style="width:100%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#ef4444; color:white;" id="councilResetWalletBtn">💣 Reset Wallet</button></div>
-    <div class="modal-buttons" style="margin-top:20px;"><button class="btn-secondary" id="closeCouncilSettings">Close</button></div>
+    <div style="padding:10px 0;">
+        <button class="btn-primary" style="width:100%;" id="councilChangePassword">🔐 Change Password</button>
+    </div>
+    <div class="modal-buttons" style="margin-top:20px;">
+        <button class="btn-secondary" id="closeCouncilSettings">Close</button>
+    </div>
 </div></div>
 
-<!-- Change Password Modal -->
+<!-- Change Password Modal (old + new password with show toggle) -->
 <div id="changePasswordModal" class="modal"><div class="modal-content">
     <h3>🔐 Change Password</h3>
-    <input type="password" id="newPassword" placeholder="New password">
-    <input type="password" id="confirmPassword" placeholder="Confirm password">
+    <div class="password-wrapper">
+        <input type="password" id="oldPassword" placeholder="Current password">
+        <button type="button" class="pw-toggle" onclick="togglePw('oldPassword', this)">👁️</button>
+    </div>
+    <div class="password-wrapper">
+        <input type="password" id="newPassword" placeholder="New password">
+        <button type="button" class="pw-toggle" onclick="togglePw('newPassword', this)">👁️</button>
+    </div>
+    <div class="password-wrapper">
+        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+        <button type="button" class="pw-toggle" onclick="togglePw('confirmPassword', this)">👁️</button>
+    </div>
     <div class="modal-buttons">
         <button class="btn-primary" id="savePasswordBtn">Save</button>
         <button class="btn-secondary" id="closePasswordModal">Cancel</button>
@@ -493,6 +584,18 @@
 <div id="alertBox" class="alert"></div>
 
 <script>
+    // ========== PASSWORD SHOW/HIDE ==========
+    function togglePw(inputId, btn) {
+        let inp = document.getElementById(inputId);
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            btn.textContent = '🙈';
+        } else {
+            inp.type = 'password';
+            btn.textContent = '👁️';
+        }
+    }
+
     // ========== FIREBASE ==========
     const firebaseConfig = {
         apiKey: "AIzaSyBQQJBRqFEDpZhRJkVa5VSob8_XatE9tEA",
@@ -604,9 +707,13 @@
             if (el) el.textContent = displayNames[c] || c;
             let bt = document.getElementById('blockTitle-' + c);
             if (bt) {
-                let icons = { council1: '🌆', council2: '🌆', council3: '🌆', council4: '🌆' };
-                bt.textContent = (icons[c] || '') + ' ' + (displayNames[c] || c);
+                bt.textContent = '🌆 ' + (displayNames[c] || c);
             }
+            // Update reset button labels in chairman settings
+            let chb = document.getElementById('clearHistBtn-' + c);
+            if (chb) chb.textContent = displayNames[c] || c;
+            let rwb = document.getElementById('resetWalBtn-' + c);
+            if (rwb) rwb.textContent = displayNames[c] || c;
         });
     }
 
@@ -622,8 +729,7 @@
     function switchTab(tab) {
         activeTab = tab;
         document.querySelectorAll('.council-tab').forEach(t => t.classList.remove('active'));
-        let allTabs = document.querySelectorAll('.council-tab');
-        allTabs.forEach(t => {
+        document.querySelectorAll('.council-tab').forEach(t => {
             let tabId = t.getAttribute('onclick').replace("switchTab('","").replace("')","");
             if (tabId === tab) t.classList.add('active');
         });
@@ -635,7 +741,6 @@
         } else {
             document.getElementById('ownHistorySection').style.display = 'none';
             document.getElementById('councilHistorySection').style.display = 'block';
-            // Show only the selected council block
             ['council1','council2','council3','council4'].forEach(c => {
                 document.getElementById('block-' + c).style.display = (c === tab) ? 'block' : 'none';
             });
@@ -676,7 +781,6 @@
         updateCouncilTabNames();
         displayChairmanHistory();
 
-        // Refresh current council block if visible
         if (activeTab !== 'own') {
             displayCouncilBlock(activeTab);
         }
@@ -695,7 +799,6 @@
     }
 
     function txnRow(icon, type, date, desc, isPos, amount, txnData) {
-        let dataStr = txnData ? encodeURIComponent(JSON.stringify(txnData)) : '';
         return `<div class="transaction-item">
             <div class="transaction-left">
                 <div class="transaction-icon">${icon}</div>
@@ -881,18 +984,12 @@
 
             councilsData[currentCouncil].balance = (councilsData[currentCouncil].balance || 0) - amount;
             councilsData[currentCouncil].history.unshift({
-                date: now,
-                type: 'Distribution',
-                amount,
-                recipientName: name,
-                recipientPhone: phone,
-                desc: desc
+                date: now, type: 'Distribution', amount,
+                recipientName: name, recipientPhone: phone, desc: desc
             });
 
             chairmanData.history.unshift({
-                date: now,
-                type: 'Council Distribution',
-                amount: -amount,
+                date: now, type: 'Council Distribution', amount: -amount,
                 desc: cName + ' → ' + name + ' (' + phone + '): ' + desc
             });
 
@@ -999,8 +1096,7 @@
         msg += '📜 DETAILS:\n\n';
 
         for (let h of history.slice(0, 50)) {
-            let sign = h.type === 'Received' ? '📱' : '📱';
-            msg += sign + ' ' + h.type + '\n';
+            msg += '📱 ' + h.type + '\n';
             msg += '   💵 PKR ' + (h.amount || 0).toLocaleString() + '\n';
             if (h.recipientName) msg += '   👤 ' + h.recipientName + '\n';
             if (h.recipientPhone) msg += '   📞 ' + h.recipientPhone + '\n';
@@ -1138,11 +1234,8 @@
     }
 
     function shareReport() {
-        if (currentUser === 'chairman') {
-            shareOwnHistory();
-        } else {
-            shareCouncilReport(currentCouncil);
-        }
+        if (currentUser === 'chairman') shareOwnHistory();
+        else shareCouncilReport(currentCouncil);
     }
 
     function printCouncilSelf() {
@@ -1153,48 +1246,89 @@
     function openChairmanSettings() { openModal('chairmanSettingsModal'); }
     function openCouncilSettings() { openModal('councilSettingsModal'); }
 
-    async function chairmanChangePassword() {
-        openModal('changePasswordModal');
-        window.passwordCallback = async function(p) {
-            credentials.chairman = p; await saveCredentials();
-            closeModal('changePasswordModal'); showAlert('Password changed successfully!', 'success');
-        };
-    }
-    async function councilChangePassword() {
-        openModal('changePasswordModal');
-        window.passwordCallback = async function(p) {
-            credentials[currentCouncil] = p; await saveCredentials();
-            closeModal('changePasswordModal'); showAlert('Password changed successfully!', 'success');
-        };
-    }
-    async function chairmanClearHistory() {
-        if (confirm('Clear history? Balance will remain.')) {
-            chairmanData.history = []; await saveChairman(); updateChairmanUI(); showAlert('History cleared!', 'success');
-        }
-    }
-    async function councilClearHistory() {
-        if (confirm('Clear history? Balance will remain.')) {
-            councilsData[currentCouncil].history = []; await saveCouncils(); updateCouncilUI(); showAlert('History cleared!', 'success');
-        }
-    }
-    async function chairmanResetWallet() {
-        if (confirm('FULL RESET! All data will be deleted!')) {
-            chairmanData = { balance: 0, history: [] }; await saveChairman(); updateChairmanUI(); showAlert('Wallet reset done!', 'success');
-        }
-    }
-    async function councilResetWallet() {
-        if (confirm('FULL RESET! All data will be deleted!')) {
-            councilsData[currentCouncil] = { balance: 0, history: [] }; await saveCouncils(); updateCouncilUI(); showAlert('Wallet reset done!', 'success');
-        }
-    }
-    function savePassword() {
-        let np = document.getElementById('newPassword').value;
-        let cp = document.getElementById('confirmPassword').value;
-        if (!np) { showAlert('Please enter a password', 'danger'); return; }
-        if (np !== cp) { showAlert('Passwords do not match', 'danger'); return; }
-        if (window.passwordCallback) { window.passwordCallback(np); window.passwordCallback = null; }
+    // Chairman change password — requires old password
+    function chairmanChangePassword() {
+        document.getElementById('oldPassword').value = '';
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
+        openModal('changePasswordModal');
+        window.passwordRole = 'chairman';
+    }
+
+    // Council change password — requires old password
+    function councilChangePassword() {
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        openModal('changePasswordModal');
+        window.passwordRole = currentCouncil;
+    }
+
+    async function savePassword() {
+        let oldPwd = document.getElementById('oldPassword').value;
+        let np = document.getElementById('newPassword').value;
+        let cp = document.getElementById('confirmPassword').value;
+
+        if (!oldPwd) { showAlert('Please enter current password', 'danger'); return; }
+        if (!np) { showAlert('Please enter a new password', 'danger'); return; }
+        if (np !== cp) { showAlert('Passwords do not match', 'danger'); return; }
+
+        // Fetch latest credentials
+        try { const crs = await database.ref('credentials').get(); if (crs.exists()) credentials = crs.val(); } catch(e) {}
+
+        let role = window.passwordRole || currentUser;
+        if (credentials[role] !== oldPwd) {
+            showAlert('❌ Current password is incorrect!', 'danger'); return;
+        }
+
+        credentials[role] = np;
+        await saveCredentials();
+        closeModal('changePasswordModal');
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        showAlert('✅ Password changed successfully!', 'success');
+        window.passwordRole = null;
+    }
+
+    // ========== RESET CONTROLS (Chairman only) ==========
+    async function chairmanClearHistory() {
+        if (confirm('Clear Chairman history? Balance will remain.')) {
+            chairmanData.history = [];
+            await saveChairman();
+            updateChairmanUI();
+            showAlert('Chairman history cleared!', 'success');
+        }
+    }
+
+    async function clearCouncilHistory(councilKey) {
+        let cName = displayNames[councilKey] || councilKey;
+        if (confirm('Clear ' + cName + ' history? Balance will remain.')) {
+            if (!councilsData[councilKey]) councilsData[councilKey] = { balance: 0, history: [] };
+            councilsData[councilKey].history = [];
+            await saveCouncils();
+            updateChairmanUI();
+            showAlert(cName + ' history cleared!', 'success');
+        }
+    }
+
+    async function chairmanResetWallet() {
+        if (confirm('FULL RESET! Chairman wallet & history will be deleted!')) {
+            chairmanData = { balance: 0, history: [] };
+            await saveChairman();
+            updateChairmanUI();
+            showAlert('Chairman wallet reset done!', 'success');
+        }
+    }
+
+    async function resetCouncilWallet(councilKey) {
+        let cName = displayNames[councilKey] || councilKey;
+        if (confirm('FULL RESET! ' + cName + ' wallet & history will be deleted!')) {
+            councilsData[councilKey] = { balance: 0, history: [] };
+            await saveCouncils();
+            updateChairmanUI();
+            showAlert(cName + ' wallet reset done!', 'success');
+        }
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -1213,12 +1347,16 @@
             if (role === 'chairman') {
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('chairmanDashboard').style.display = 'block';
+                document.getElementById('chairmanLogout').style.display = 'flex';
+                document.getElementById('councilLogout').style.display = 'none';
                 updateChairmanUI();
             } else {
                 currentCouncil = role;
                 sessionStorage.setItem('currentCouncil', currentCouncil);
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('councilDashboard').style.display = 'block';
+                document.getElementById('councilLogout').style.display = 'flex';
+                document.getElementById('chairmanLogout').style.display = 'none';
                 updateCouncilUI();
             }
             document.getElementById('password').value = '';
@@ -1235,6 +1373,8 @@
         document.getElementById('loginPage').style.display = 'flex';
         document.getElementById('chairmanDashboard').style.display = 'none';
         document.getElementById('councilDashboard').style.display = 'none';
+        document.getElementById('chairmanLogout').style.display = 'none';
+        document.getElementById('councilLogout').style.display = 'none';
     }
 
     // ========== EVENT LISTENERS ==========
@@ -1273,17 +1413,16 @@
     document.getElementById('councilResetFilterBtn').onclick = resetCouncilFilter;
 
     document.getElementById('chairmanChangePassword').onclick = chairmanChangePassword;
-    document.getElementById('chairmanClearHistoryBtn').onclick = chairmanClearHistory;
-    document.getElementById('chairmanResetWalletBtn').onclick = chairmanResetWallet;
     document.getElementById('closeChairmanSettings').onclick = () => closeModal('chairmanSettingsModal');
 
     document.getElementById('councilChangePassword').onclick = councilChangePassword;
-    document.getElementById('councilClearHistoryBtn').onclick = councilClearHistory;
-    document.getElementById('councilResetWalletBtn').onclick = councilResetWallet;
     document.getElementById('closeCouncilSettings').onclick = () => closeModal('councilSettingsModal');
 
     document.getElementById('savePasswordBtn').onclick = savePassword;
-    document.getElementById('closePasswordModal').onclick = () => closeModal('changePasswordModal');
+    document.getElementById('closePasswordModal').onclick = () => {
+        closeModal('changePasswordModal');
+        window.passwordRole = null;
+    };
     document.getElementById('password').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
 
     // ========== INIT ==========
@@ -1291,9 +1430,11 @@
         if (savedUser === 'chairman') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('chairmanDashboard').style.display = 'block';
+            document.getElementById('chairmanLogout').style.display = 'flex';
         } else if (savedCouncil) {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('councilDashboard').style.display = 'block';
+            document.getElementById('councilLogout').style.display = 'flex';
         }
     }
     loadFromFirebase();
