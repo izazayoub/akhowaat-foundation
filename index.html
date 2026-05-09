@@ -54,35 +54,27 @@
         }
         /* Password input wrapper with show/hide toggle */
         .password-wrapper {
+            position: relative;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background: white;
         }
         .password-wrapper input {
-            flex: 1;
-            border: none !important;
-            outline: none !important;
+            width: 100%;
             margin-bottom: 0 !important;
-            border-radius: 10px !important;
-            background: transparent !important;
-            box-shadow: none !important;
+            padding-right: 40px !important;
         }
         .pw-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 18px;
-            width: 44px;
-            min-width: 44px;
+            font-size: 16px;
             padding: 0;
-            color: #888;
+            color: #aaa;
             line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: auto !important;
         }
         .error-msg {
             background: #ffebee; color: #c62828; padding: 10px;
@@ -298,7 +290,7 @@
         </select>
         <div class="password-wrapper">
             <input type="password" id="password" placeholder="Password">
-            <button type="button" class="pw-toggle" onclick="togglePw('password', this)">👁️</button>
+            <span class="pw-toggle" onclick="togglePw('password', this)">👁️</span>
         </div>
         <button id="loginBtn">🔐 Login</button>
     </div>
